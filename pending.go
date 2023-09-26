@@ -54,7 +54,7 @@ func (pending Pending) attributeOfKey(s string) string {
 }
 
 func (pending Pending) recursiveValidate() Results {
-	if validatable, ok := pending.value.(Validater); ok {
+	if validatable, ok := pending.value.(Validator); ok {
 		return validatable.Validate().Prefixed(pending.attribute)
 	}
 
@@ -65,14 +65,14 @@ func (pending Pending) recursiveValidate() Results {
 	switch reflected.Kind() {
 	case reflect.Slice, reflect.Array:
 		for i := 0; i < reflected.Len(); i++ {
-			if validatable, ok := reflected.Index(i).Interface().(Validater); ok {
+			if validatable, ok := reflected.Index(i).Interface().(Validator); ok {
 				name := pending.attributeOfIndex(i)
 				results = append(results, validatable.Validate().Prefixed(name)...)
 			}
 		}
 	case reflect.Map:
 		for _, key := range reflected.MapKeys() {
-			if validatable, ok := reflected.MapIndex(key).Interface().(Validater); ok {
+			if validatable, ok := reflected.MapIndex(key).Interface().(Validator); ok {
 				name := pending.attributeOfKey(key.String())
 				results = append(results, validatable.Validate().Prefixed(name)...)
 			}

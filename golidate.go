@@ -1,6 +1,6 @@
 package golidate
 
-type Validater interface {
+type Validator interface {
 	Validate() Results
 }
 
