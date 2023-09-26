@@ -47,6 +47,10 @@ func (results Results) Passed() Results {
 }
 
 func (results Results) Prefixed(prefix string) Results {
+	if prefix == "" {
+		return results
+	}
+
 	prefixed := make(Results, len(results))
 
 	for i, result := range results {
@@ -88,4 +92,14 @@ func (results Results) Group() Grouped {
 	}
 
 	return group
+}
+
+func (results Results) Has(attribute string) bool {
+	for _, result := range results {
+		if result.Attribute == attribute {
+			return true
+		}
+	}
+
+	return false
 }
