@@ -9,5 +9,5 @@ import (
 var DomainRegex = regexp.MustCompile(`^(?:[a-z0-9-]+\.){1,}[a-z]{2,63}$`)
 
 func Domain() golidate.Rule {
-	return Regex(DomainRegex).Code("domain")
+	return Regex(DomainRegex).Rename("domain")
 }

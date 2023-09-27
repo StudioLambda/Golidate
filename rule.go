@@ -4,13 +4,28 @@ type Rule func(value any) Result
 
 type Rules []Rule
 
-func (rule Rule) Code(message string) Rule {
+func (rule Rule) Code(code string) Rule {
 	return func(value any) Result {
 		result := rule(value)
-		result.Code = message
+		result.Code = code
 
 		return result
 	}
+}
+
+func (rule Rule) Message(message string) Rule {
+	return func(value any) Result {
+		result := rule(value)
+		result.Message = message
+
+		return result
+	}
+}
+
+func (rule Rule) Rename(code string) Rule {
+	return rule.
+		Code(code).
+		Message(code)
 }
 
 func (rule Rule) With(key string, val any) Rule {

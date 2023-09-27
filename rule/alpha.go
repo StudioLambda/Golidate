@@ -9,5 +9,5 @@ import (
 var AlphaRegex = regexp.MustCompile(`^[a-zA-Z]*$`)
 
 func Alpha() golidate.Rule {
-	return Regex(AlphaRegex).Code("alpha")
+	return Regex(AlphaRegex).Rename("alpha")
 }

@@ -27,10 +27,7 @@ func TestResultsTranslate(t *testing.T) {
 	t.Run("Complex", func(t *testing.T) {
 		results := golidate.Validate(
 			golidate.Value("something invalid").Name("username").Rules(
-				rule.And(
-					rule.Min(10),
-					rule.Max(20),
-				),
+				rule.And(rule.MinLen(5), rule.MaxLen(10)),
 				rule.Not(rule.Nil()),
 			),
 		)

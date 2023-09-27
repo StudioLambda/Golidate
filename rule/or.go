@@ -4,21 +4,25 @@ import "github.com/studiolambda/golidate"
 
 func Or(rules ...golidate.Rule) golidate.Rule {
 	return func(value any) golidate.Result {
-		operations := golidate.Results{}
-
-		for _, rule := range rules {
-			operations = append(operations, rule(value))
-		}
+		operations := make(golidate.Results, 0, len(rules))
 
 		result := golidate.
 			Uncertain(value, "or").
-			With("operations", operations).
 			OnRename(golidate.OnRenameMany("operations"))
 
-		if operations.PassesAny() {
-			return result.Pass()
+		for _, rule := range rules {
+			current := rule(value)
+			operations = append(operations, current)
+
+			if current.PassesAll() {
+				return result.
+					With("operations", operations).
+					Pass()
+			}
 		}
 
-		return result.Fail()
+		return result.
+			With("operations", operations).
+			Fail()
 	}
 }

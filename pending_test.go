@@ -120,8 +120,8 @@ func TestPointerValue(t *testing.T) {
 
 	t.Run("NilChecked", func(t *testing.T) {
 		value := golidate.Value(nil).Rules(
-			rule.Or(rule.Nil(), rule.Min(0)),
-			rule.Or(rule.Nil(), rule.Max(20)),
+			rule.Optional(rule.Min(0)),
+			rule.Optional(rule.Max(20)),
 		)
 		result := value.Validate()
 
@@ -129,8 +129,7 @@ func TestPointerValue(t *testing.T) {
 
 		var realValue2 *int = nil
 		value2 := golidate.Value(realValue2).Rules(
-			rule.Or(rule.Nil(), rule.Min(0)),
-			rule.Or(rule.Nil(), rule.Max(20)),
+			rule.Optional(rule.Min(0)),
 		)
 		result2 := value2.Validate()
 
@@ -138,8 +137,8 @@ func TestPointerValue(t *testing.T) {
 
 		realValue3 := 10
 		value3 := golidate.Value(&realValue3).Rules(
-			rule.Or(rule.Nil(), rule.Min(0)),
-			rule.Or(rule.Nil(), rule.Max(20)),
+			rule.Optional(rule.Min(0)),
+			rule.Optional(rule.Max(20)),
 		)
 		result3 := value3.Validate()
 
