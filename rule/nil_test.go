@@ -17,6 +17,16 @@ func TestNil(t *testing.T) {
 		require.Empty(t, result.Metadata)
 	})
 
+	t.Run("PassReal", func(t *testing.T) {
+		var realValue *int = nil
+		result := rule.Nil()(realValue)
+
+		require.True(t, result.Passes())
+		require.Equal(t, "nil", result.Code)
+		require.Equal(t, realValue, result.Value)
+		require.Empty(t, result.Metadata)
+	})
+
 	t.Run("Fail", func(t *testing.T) {
 		result := rule.Nil()(0)
 
