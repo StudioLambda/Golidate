@@ -12,6 +12,15 @@ type Pending struct {
 }
 
 func Value(value any) Pending {
+	reflected := reflect.ValueOf(value)
+	if reflected.Kind() == reflect.Ptr && !reflected.IsNil() {
+		return Pending{
+			value:     reflected.Elem().Interface(),
+			attribute: "",
+			rules:     make([]Rule, 0),
+		}
+	}
+
 	return Pending{
 		value:     value,
 		attribute: "",

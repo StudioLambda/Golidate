@@ -83,3 +83,66 @@ func TestRecursiveValidate(t *testing.T) {
 	require.True(t, failed.Has("dp.1.cp"))
 	require.True(t, failed.Has("ep.foo.cp"))
 }
+
+func TestPointerValue(t *testing.T) {
+	t.Run("PointerPass", func(t *testing.T) {
+		realValue := 10
+		value := golidate.Value(&realValue).Rules(
+			rule.Min(0),
+			rule.Max(20),
+		)
+		result := value.Validate()
+
+		require.True(t, result.PassesAll())
+	})
+
+	t.Run("PointerFail", func(t *testing.T) {
+		realValue := 30
+		value := golidate.Value(&realValue).Rules(
+			rule.Min(0),
+			rule.Max(20),
+		)
+		result := value.Validate()
+
+		require.False(t, result.PassesAll())
+	})
+
+	t.Run("Nil", func(t *testing.T) {
+		var realValue *int
+		value := golidate.Value(realValue).Rules(
+			rule.Min(0),
+			rule.Max(20),
+		)
+		result := value.Validate()
+
+		require.False(t, result.PassesAll())
+	})
+
+	t.Run("NilChecked", func(t *testing.T) {
+		value := golidate.Value(nil).Rules(
+			rule.Or(rule.Nil(), rule.Min(0)),
+			rule.Or(rule.Nil(), rule.Max(20)),
+		)
+		result := value.Validate()
+
+		require.True(t, result.PassesAll())
+
+		var realValue2 *int = nil
+		value2 := golidate.Value(realValue2).Rules(
+			rule.Or(rule.Nil(), rule.Min(0)),
+			rule.Or(rule.Nil(), rule.Max(20)),
+		)
+		result2 := value2.Validate()
+
+		require.True(t, result2.PassesAll())
+
+		realValue3 := 10
+		value3 := golidate.Value(&realValue3).Rules(
+			rule.Or(rule.Nil(), rule.Min(0)),
+			rule.Or(rule.Nil(), rule.Max(20)),
+		)
+		result3 := value3.Validate()
+
+		require.True(t, result3.PassesAll())
+	})
+}
