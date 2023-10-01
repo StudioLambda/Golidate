@@ -1,6 +1,7 @@
 package golidate_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -15,8 +16,9 @@ type EitherAorB struct {
 	value any
 }
 
-func (either EitherAorB) Validate() golidate.Results {
+func (either EitherAorB) Validate(ctx context.Context) golidate.Results {
 	return golidate.Validate(
+		ctx,
 		golidate.Value(either.value).Rules(
 			rule.Type[A]().When(either.kind == "a"),
 			rule.Type[B]().When(either.kind == "b"),
@@ -36,8 +38,9 @@ type User struct {
 	Profile  Profile
 }
 
-func (user User) Validate() golidate.Results {
+func (user User) Validate(ctx context.Context) golidate.Results {
 	return golidate.Validate(
+		ctx,
 		golidate.Value(user.Username).Rules(
 			rule.Not(rule.Nil()),
 		),
@@ -48,8 +51,9 @@ func (user User) Validate() golidate.Results {
 	)
 }
 
-func (user Profile) Validate() golidate.Results {
+func (user Profile) Validate(ctx context.Context) golidate.Results {
 	return golidate.Validate(
+		ctx,
 		golidate.Value(user.Name),
 		golidate.Value(user.Email).Rules(
 			rule.Not(rule.Nil()),
@@ -63,6 +67,7 @@ func (user Profile) Validate() golidate.Results {
 func TestValidate(t *testing.T) {
 	t.Run("SinglePass", func(t *testing.T) {
 		results := golidate.Validate(
+			context.Background(),
 			golidate.Value(3).Rules(
 				rule.Min(2),
 			),
@@ -73,6 +78,7 @@ func TestValidate(t *testing.T) {
 
 	t.Run("SingleFailure", func(t *testing.T) {
 		result := golidate.Validate(
+			context.Background(),
 			golidate.Value(1).Rules(
 				rule.Min(2),
 			),
@@ -83,6 +89,7 @@ func TestValidate(t *testing.T) {
 
 	t.Run("SingleMultipleFailures", func(t *testing.T) {
 		result := golidate.Validate(
+			context.Background(),
 			golidate.Value(1).Rules(rule.Min(2), rule.Max(0)),
 		)
 
@@ -91,6 +98,7 @@ func TestValidate(t *testing.T) {
 
 	t.Run("MultipleSuccess", func(t *testing.T) {
 		result := golidate.Validate(
+			context.Background(),
 			golidate.Value(3).Rules(rule.Min(2)),
 			golidate.Value(3).Rules(rule.Max(4)),
 		)
@@ -100,6 +108,7 @@ func TestValidate(t *testing.T) {
 
 	t.Run("MultipleSingleFailure", func(t *testing.T) {
 		result := golidate.Validate(
+			context.Background(),
 			golidate.Value(1).Rules(rule.Min(2)),
 			golidate.Value(3).Rules(rule.Max(4)),
 		)
@@ -109,6 +118,7 @@ func TestValidate(t *testing.T) {
 
 	t.Run("MultipleMultipleFailures", func(t *testing.T) {
 		result := golidate.Validate(
+			context.Background(),
 			golidate.Value(1).Rules(rule.Min(2)),
 			golidate.Value(5).Rules(rule.Max(4)),
 		)
@@ -128,6 +138,7 @@ func TestValidate(t *testing.T) {
 		}
 
 		result := golidate.Validate(
+			context.Background(),
 			golidate.Value(user),
 		)
 
@@ -146,6 +157,7 @@ func TestValidate(t *testing.T) {
 		}
 
 		result := golidate.Validate(
+			context.Background(),
 			golidate.Value(user),
 		)
 
@@ -155,20 +167,52 @@ func TestValidate(t *testing.T) {
 
 func TestPolymorphism(t *testing.T) {
 	t.Run("SuccessA", func(t *testing.T) {
-		result := EitherAorB{kind: "a", value: A{}}.Validate()
+		result := EitherAorB{kind: "a", value: A{}}.Validate(context.Background())
 
 		require.True(t, result.PassesAll())
 	})
 
 	t.Run("SuccessB", func(t *testing.T) {
-		result := EitherAorB{kind: "b", value: B{}}.Validate()
+		result := EitherAorB{kind: "b", value: B{}}.Validate(context.Background())
 
 		require.True(t, result.PassesAll())
 	})
 
 	t.Run("Failure", func(t *testing.T) {
-		result := EitherAorB{kind: "a", value: B{}}.Validate()
+		result := EitherAorB{kind: "a", value: B{}}.Validate(context.Background())
 
 		require.False(t, result.PassesAll())
 	})
+}
+
+type ContextValue struct {
+	Value int
+}
+
+type maxKeyStruct struct{}
+
+var MaxKey = maxKeyStruct{}
+
+func (c ContextValue) Validate(ctx context.Context) golidate.Results {
+	max := ctx.Value(MaxKey).(int64)
+	return golidate.Validate(
+		ctx,
+		golidate.Value(c.Value).Rules(
+			rule.Min(0),
+			rule.Max(max),
+		),
+	)
+}
+
+func TestContextValues(t *testing.T) {
+	value := ContextValue{Value: 10}
+	ctx := context.WithValue(context.Background(), MaxKey, int64(15))
+	result := golidate.Value(value).Validate(ctx)
+
+	require.True(t, result.PassesAll())
+
+	ctx = context.WithValue(context.Background(), MaxKey, int64(5))
+	result = golidate.Value(value).Validate(ctx)
+
+	require.False(t, result.PassesAll())
 }

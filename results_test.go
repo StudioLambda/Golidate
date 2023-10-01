@@ -1,6 +1,7 @@
 package golidate_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -13,6 +14,7 @@ import (
 func TestResultsTranslate(t *testing.T) {
 	t.Run("Simple", func(t *testing.T) {
 		results := golidate.Validate(
+			context.Background(),
 			golidate.Value("something invalid").Name("username").Rules(
 				rule.Alpha(),
 			),
@@ -26,6 +28,7 @@ func TestResultsTranslate(t *testing.T) {
 
 	t.Run("Complex", func(t *testing.T) {
 		results := golidate.Validate(
+			context.Background(),
 			golidate.Value("something invalid").Name("username").Rules(
 				rule.And(rule.MinLen(5), rule.MaxLen(10)),
 				rule.Not(rule.Nil()),
@@ -49,8 +52,9 @@ type NestedResults struct {
 	Numbers []int
 }
 
-func (n NestedResults) Validate() golidate.Results {
+func (n NestedResults) Validate(ctx context.Context) golidate.Results {
 	return golidate.Validate(
+		ctx,
 		golidate.Value(n.Name).Name("name").Rules(
 			rule.MinLen(4),
 		),
@@ -67,6 +71,7 @@ func TestResultsGroup(t *testing.T) {
 	nested := NestedResults{Numbers: []int{1, 2, 30}}
 
 	results := golidate.Validate(
+		context.Background(),
 		golidate.Value("something.valid").Name("username").Rules(
 			rule.Not(rule.Nil()),
 			rule.Type[string](),

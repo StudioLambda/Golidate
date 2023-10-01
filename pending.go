@@ -1,6 +1,7 @@
 package golidate
 
 import (
+	"context"
 	"fmt"
 	"reflect"
 )
@@ -62,9 +63,9 @@ func (pending Pending) attributeOfKey(s string) string {
 	return fmt.Sprintf("%s.%s", pending.attribute, s)
 }
 
-func (pending Pending) recursiveValidate() Results {
+func (pending Pending) recursiveValidate(ctx context.Context) Results {
 	if validatable, ok := pending.value.(Validator); ok {
-		return validatable.Validate().Prefixed(pending.attribute)
+		return validatable.Validate(ctx).Prefixed(pending.attribute)
 	}
 
 	results := make(Results, 0)
@@ -76,14 +77,14 @@ func (pending Pending) recursiveValidate() Results {
 		for i := 0; i < reflected.Len(); i++ {
 			if validatable, ok := reflected.Index(i).Interface().(Validator); ok {
 				name := pending.attributeOfIndex(i)
-				results = append(results, validatable.Validate().Prefixed(name)...)
+				results = append(results, validatable.Validate(ctx).Prefixed(name)...)
 			}
 		}
 	case reflect.Map:
 		for _, key := range reflected.MapKeys() {
 			if validatable, ok := reflected.MapIndex(key).Interface().(Validator); ok {
 				name := pending.attributeOfKey(key.String())
-				results = append(results, validatable.Validate().Prefixed(name)...)
+				results = append(results, validatable.Validate(ctx).Prefixed(name)...)
 			}
 		}
 	}
@@ -91,7 +92,7 @@ func (pending Pending) recursiveValidate() Results {
 	return results
 }
 
-func (pending Pending) Validate() Results {
+func (pending Pending) Validate(ctx context.Context) Results {
 	results := make(Results, 0, len(pending.rules))
 
 	for _, rule := range pending.rules {
@@ -106,5 +107,5 @@ func (pending Pending) Validate() Results {
 		results = append(results, expanded...)
 	}
 
-	return append(results, pending.recursiveValidate()...)
+	return append(results, pending.recursiveValidate(ctx)...)
 }

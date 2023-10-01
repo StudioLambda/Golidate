@@ -1,6 +1,7 @@
 package golidate_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -20,7 +21,7 @@ func TestPendingRules(t *testing.T) {
 	result := golidate.
 		Value(20).
 		Rules(rule.Min(25)).
-		Validate()
+		Validate(context.Background())
 
 	require.False(t, result.PassesAll())
 }
@@ -28,7 +29,7 @@ func TestPendingRules(t *testing.T) {
 func TestPendingValidate(t *testing.T) {
 	result := golidate.
 		Value(20).
-		Validate()
+		Validate(context.Background())
 
 	require.True(t, result.PassesAll())
 }
@@ -37,8 +38,9 @@ type Bs struct {
 	Cp int
 }
 
-func (b Bs) Validate() golidate.Results {
+func (b Bs) Validate(ctx context.Context) golidate.Results {
 	return golidate.Validate(
+		ctx,
 		golidate.Value(b.Cp).Name("cp").Rules(
 			rule.Min(0),
 			rule.Max(10),
@@ -52,8 +54,9 @@ type As struct {
 	Ep map[string]Bs
 }
 
-func (a As) Validate() golidate.Results {
+func (a As) Validate(ctx context.Context) golidate.Results {
 	return golidate.Validate(
+		ctx,
 		golidate.Value(a.Bp).Name("bp"),
 		golidate.Value(a.Dp).Name("dp"),
 		golidate.Value(a.Ep).Name("ep"),
@@ -75,7 +78,7 @@ func TestRecursiveValidate(t *testing.T) {
 
 	failed := golidate.
 		Value(a).
-		Validate().
+		Validate(context.Background()).
 		Failed().
 		Translate(language.English)
 
@@ -91,7 +94,7 @@ func TestPointerValue(t *testing.T) {
 			rule.Min(0),
 			rule.Max(20),
 		)
-		result := value.Validate()
+		result := value.Validate(context.Background())
 
 		require.True(t, result.PassesAll())
 	})
@@ -102,7 +105,7 @@ func TestPointerValue(t *testing.T) {
 			rule.Min(0),
 			rule.Max(20),
 		)
-		result := value.Validate()
+		result := value.Validate(context.Background())
 
 		require.False(t, result.PassesAll())
 	})
@@ -113,7 +116,7 @@ func TestPointerValue(t *testing.T) {
 			rule.Min(0),
 			rule.Max(20),
 		)
-		result := value.Validate()
+		result := value.Validate(context.Background())
 
 		require.False(t, result.PassesAll())
 	})
@@ -123,7 +126,7 @@ func TestPointerValue(t *testing.T) {
 			rule.Optional(rule.Min(0)),
 			rule.Optional(rule.Max(20)),
 		)
-		result := value.Validate()
+		result := value.Validate(context.Background())
 
 		require.True(t, result.PassesAll())
 
@@ -131,7 +134,7 @@ func TestPointerValue(t *testing.T) {
 		value2 := golidate.Value(realValue2).Rules(
 			rule.Optional(rule.Min(0)),
 		)
-		result2 := value2.Validate()
+		result2 := value2.Validate(context.Background())
 
 		require.True(t, result2.PassesAll())
 
@@ -140,7 +143,7 @@ func TestPointerValue(t *testing.T) {
 			rule.Optional(rule.Min(0)),
 			rule.Optional(rule.Max(20)),
 		)
-		result3 := value3.Validate()
+		result3 := value3.Validate(context.Background())
 
 		require.True(t, result3.PassesAll())
 	})
