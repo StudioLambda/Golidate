@@ -59,7 +59,7 @@ func (n NestedResults) Validate(ctx context.Context) golidate.Results {
 			rule.MinLen(4),
 		),
 		golidate.Value(n.Numbers).Name("numbers").Rules(
-			rule.SliceEach[int](
+			rule.SliceValues[[]int](
 				rule.Min(1),
 				rule.Max(10),
 			),

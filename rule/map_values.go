@@ -6,15 +6,15 @@ import (
 	"github.com/studiolambda/golidate"
 )
 
-func SliceEach[T any](rules ...golidate.Rule) golidate.Rule {
+func MapValues[M map[K]V, K comparable, V any](rules ...golidate.Rule) golidate.Rule {
 	return func(value any) golidate.Result {
 		result := golidate.
-			Uncertain(value, "slice_each")
+			Uncertain(value, "map_values")
 
-		if iterable, ok := value.([]T); ok {
+		if iterable, ok := value.(M); ok {
 			for _, rule := range rules {
-				for i, current := range iterable {
-					res := rule(current).Name(fmt.Sprintf("%d", i))
+				for key, current := range iterable {
+					res := rule(current).Name(fmt.Sprintf("%+v", key))
 					result = result.WithChild(res)
 				}
 			}

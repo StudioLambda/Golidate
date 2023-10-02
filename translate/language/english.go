@@ -45,7 +45,7 @@ var English = golidate.Dictionary{
 	"or":             translate.SplitFromMetadata("operations", " or else "),
 	"regex":          translate.Simple("the :attribute field must match the regular expression @regex"),
 	"required":       translate.SplitFromMetadata("operations", " and also "),
-	"slice_each":     translate.Simple("the :attribute field must be a slice"),
+	"slice_values":   translate.Simple("the :attribute field must be a slice"),
 	"type":           translate.Simple("the :attribute field must be of type @type"),
 	"type_of":        translate.Simple("the :attribute field must be of type @type"),
 	"uppercase":      translate.Simple("the :attribute field must only contain uppercase letters"),
