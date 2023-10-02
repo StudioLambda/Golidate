@@ -1,9 +1,9 @@
 package rule
 
 import (
+	"fmt"
 	"regexp"
 
-	"github.com/spf13/cast"
 	"github.com/studiolambda/golidate"
 )
 
@@ -13,9 +13,9 @@ func Regex(expression *regexp.Regexp) golidate.Rule {
 			Uncertain(value, "regex").
 			With("regex", expression.String())
 
-		val, err := cast.ToStringE(value)
+		val := fmt.Sprintf("%+v", value)
 
-		if err != nil || !expression.MatchString(val) {
+		if !expression.MatchString(val) {
 			return result.Fail()
 		}
 

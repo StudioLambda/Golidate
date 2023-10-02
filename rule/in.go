@@ -1,7 +1,8 @@
 package rule
 
 import (
-	"github.com/spf13/cast"
+	"fmt"
+
 	"github.com/studiolambda/golidate"
 )
 
@@ -11,20 +12,10 @@ func In(values ...any) golidate.Rule {
 			Uncertain(value, "in").
 			With("values", values)
 
-		val, err := cast.ToStringE(value)
-
-		if err != nil {
-			return result.Fail()
-		}
+		val := fmt.Sprintf("%+v", value)
 
 		for _, v := range values {
-			current, err := cast.ToStringE(v)
-
-			if err != nil {
-				return result.Fail()
-			}
-
-			if val == current {
+			if val == fmt.Sprintf("%+v", v) {
 				return result.Pass()
 			}
 		}

@@ -1,9 +1,9 @@
 package rule
 
 import (
+	"fmt"
 	"unicode"
 
-	"github.com/spf13/cast"
 	"github.com/studiolambda/golidate"
 )
 
@@ -12,11 +12,7 @@ func Lowercase() golidate.Rule {
 		result := golidate.
 			Uncertain(value, "lowercase")
 
-		val, err := cast.ToStringE(value)
-
-		if err != nil {
-			return result.Fail()
-		}
+		val := fmt.Sprintf("%+v", value)
 
 		for _, r := range val {
 			if !unicode.IsLower(r) && unicode.IsLetter(r) {

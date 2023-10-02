@@ -1,9 +1,9 @@
 package rule
 
 import (
+	"fmt"
 	"strings"
 
-	"github.com/spf13/cast"
 	"github.com/studiolambda/golidate"
 )
 
@@ -13,9 +13,9 @@ func HasPrefix(prefix string) golidate.Rule {
 			Uncertain(value, "has_prefix").
 			With("prefix", prefix)
 
-		val, err := cast.ToStringE(value)
+		val := fmt.Sprintf("%+v", value)
 
-		if err != nil || !strings.HasPrefix(val, prefix) {
+		if !strings.HasPrefix(val, prefix) {
 			return result.Fail()
 		}
 

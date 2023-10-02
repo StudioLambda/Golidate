@@ -1,9 +1,9 @@
 package rule
 
 import (
+	"fmt"
 	"strings"
 
-	"github.com/spf13/cast"
 	"github.com/studiolambda/golidate"
 )
 
@@ -13,9 +13,9 @@ func HasSuffix(suffix string) golidate.Rule {
 			Uncertain(value, "has_suffix").
 			With("suffix", suffix)
 
-		val, err := cast.ToStringE(value)
+		val := fmt.Sprintf("%+v", value)
 
-		if err != nil || !strings.HasSuffix(val, suffix) {
+		if !strings.HasSuffix(val, suffix) {
 			return result.Fail()
 		}
 

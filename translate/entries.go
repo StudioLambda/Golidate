@@ -1,6 +1,7 @@
 package translate
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/spf13/cast"
@@ -41,18 +42,17 @@ func Simple(message string) golidate.Entry {
 		message = strings.ReplaceAll(message, ":code", result.Code)
 		message = strings.ReplaceAll(message, ":message", result.Message)
 
-		if value, err := cast.ToStringE(result.Value); err == nil {
-			message = strings.ReplaceAll(message, ":value", value)
-		}
+		value := fmt.Sprintf("%+v", result.Value)
+		message = strings.ReplaceAll(message, ":value", value)
 
 		for key, val := range result.Metadata {
-			if value, err := cast.ToStringE(val); err == nil {
-				message = strings.ReplaceAll(message, "@"+key, value)
+			if value, err := cast.ToStringSliceE(val); err == nil {
+				message = strings.ReplaceAll(message, "@"+key, strings.Join(value, ", "))
 				continue
 			}
 
-			if value, err := cast.ToStringSliceE(val); err == nil {
-				message = strings.ReplaceAll(message, "@"+key, strings.Join(value, ", "))
+			if value, err := cast.ToStringE(val); err == nil {
+				message = strings.ReplaceAll(message, "@"+key, value)
 				continue
 			}
 		}
