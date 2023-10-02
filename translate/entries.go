@@ -51,10 +51,8 @@ func Simple(message string) golidate.Entry {
 				continue
 			}
 
-			if value, err := cast.ToStringE(val); err == nil {
-				message = strings.ReplaceAll(message, "@"+key, value)
-				continue
-			}
+			value := fmt.Sprintf("%+v", val)
+			message = strings.ReplaceAll(message, "@"+key, value)
 		}
 
 		result.Message = message

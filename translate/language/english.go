@@ -17,14 +17,14 @@ import (
 // Try finding alternative words if there is the need to write those
 // keywords in the message without triggering the special behavior.`
 var English = golidate.Dictionary{
-	"accepted":       translate.Simple("the :attribute field must be accepted"),
+	"accepted":       translate.Simple("the :attribute field must be one of @values"),
 	"alpha":          translate.Simple("the :attribute field must only contain letters"),
 	"alpha_dash":     translate.Simple("the :attribute field must only contain letters, numbers, dashes, and underscores"),
 	"alpha_extended": translate.Simple("the :attribute field must only contain letters, numbers, dashes, underscores and dots"),
 	"alpha_numeric":  translate.Simple("the :attribute field must only contain letters and numbers"),
 	"and":            translate.SplitFromMetadata("operations", " and also "),
 	"ascii":          translate.Simple("the :attribute field must only contain single-byte alphanumeric characters and symbols"),
-	"boolean":        translate.Simple("the :attribute field must be @values"),
+	"boolean":        translate.Simple("the :attribute field must be one of @values"),
 	"convertible":    translate.Simple("the :attribute field must be convertible to @type"),
 	"declined":       translate.Simple("the :attribute field must be declined"),
 	"domain":         translate.Simple("the :attribute field must be a valid domain"),
