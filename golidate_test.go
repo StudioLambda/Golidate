@@ -216,3 +216,62 @@ func TestContextValues(t *testing.T) {
 
 	require.False(t, result.PassesAll())
 }
+
+func TestComplexErrorKeys(t *testing.T) {
+	t.Run("Slices", func(t *testing.T) {
+		value := [][]int{{1, 5}, {10, 15}, {25, 30}}
+		result := golidate.Value(value).Name("foo").Rules(
+			rule.SliceValues[[][]int](
+				rule.SliceValues[[]int](
+					rule.Min(10),
+					rule.Max(15),
+				),
+			),
+		).Validate(context.Background())
+
+		failed := result.Failed()
+
+		require.True(t, failed.Has("foo.0.0"))
+		require.True(t, failed.Has("foo.0.1"))
+		require.True(t, failed.Has("foo.2.0"))
+		require.True(t, failed.Has("foo.2.1"))
+	})
+
+	t.Run("Maps", func(t *testing.T) {
+		value := map[string]int{
+			"one":   5,
+			"two":   10,
+			"three": 25,
+		}
+
+		result := golidate.Value(value).Name("foo").Rules(
+			rule.MapValues[map[string]int](
+				rule.Min(10),
+				rule.Max(15),
+			),
+		).Validate(context.Background())
+
+		failed := result.Failed()
+
+		require.True(t, failed.Has("foo.one"))
+		require.True(t, failed.Has("foo.three"))
+	})
+
+	t.Run("Map Keys", func(t *testing.T) {
+		value := map[string]int{
+			"one":     5,
+			"two bad": 10,
+			"three":   25,
+		}
+
+		result := golidate.Value(value).Name("foo").Rules(
+			rule.MapKeys[map[string]int](
+				rule.Alpha(),
+			),
+		).Validate(context.Background())
+
+		failed := result.Failed()
+
+		require.True(t, failed.Has("foo.[two bad]"))
+	})
+}

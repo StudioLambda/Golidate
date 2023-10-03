@@ -60,4 +60,23 @@ func TestMapValues(t *testing.T) {
 		require.Equal(t, value, result.Value)
 		require.Equal(t, golidate.Metadata{}, result.Metadata)
 	})
+
+	t.Run("CorrectErrorCode", func(t *testing.T) {
+		value := map[string]int{
+			"one":   5,
+			"two":   15,
+			"three": 25,
+		}
+
+		result := rule.MapValues[map[string]int](
+			rule.Min(10),
+			rule.Max(20),
+		)(value)
+
+		require.True(t, result.Passes())
+		require.False(t, result.PassesChilds())
+		require.Equal(t, "map_values", result.Code)
+		require.Equal(t, value, result.Value)
+		require.Equal(t, golidate.Metadata{}, result.Metadata)
+	})
 }

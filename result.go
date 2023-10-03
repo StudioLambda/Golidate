@@ -5,28 +5,33 @@ type Metadata map[string]any
 type OnRename func(result Result)
 
 type Result struct {
-	ok         bool        `json:"-"`
-	conditions []Condition `json:"-"`
-	onRename   OnRename    `json:"-"`
-	children   []Result    `json:"-"`
-	Attribute  string      `json:"attribute"`
-	Value      any         `json:"value"`
-	Code       string      `json:"code"`
-	Message    string      `json:"message"`
-	Metadata   Metadata    `json:"metadata"`
+	ok               bool        `json:"-"`
+	conditions       []Condition `json:"-"`
+	onRename         OnRename    `json:"-"`
+	children         Results     `json:"-"`
+	prefixedChildren Results     `json:"-"`
+	Attribute        string      `json:"attribute"`
+	Value            any         `json:"value"`
+	Code             string      `json:"code"`
+	Message          string      `json:"message"`
+	Metadata         Metadata    `json:"metadata"`
 }
 
 func (result Result) Results(name string) Results {
-	results := make(Results, 1+len(result.children))
+	results := make(Results, 1)
 
 	results[0] = result
 
-	for i, child := range result.children {
-		results[i+1] = child
-
+	for _, child := range result.children {
 		if name != "" {
-			results[i+1] = results[i+1].Name(name)
+			results = append(results, child.Name(name).Results(name)...)
+		} else {
+			results = append(results, child.Results(name)...)
 		}
+	}
+
+	for _, child := range result.prefixedChildren.Prefixed(result.Attribute) {
+		results = append(results, child.Results(name)...)
 	}
 
 	return results
@@ -34,6 +39,12 @@ func (result Result) Results(name string) Results {
 
 func (result Result) WithChild(child Result) Result {
 	result.children = append(result.children, child)
+
+	return result
+}
+
+func (result Result) WithPrefixedChild(child Result) Result {
+	result.prefixedChildren = append(result.prefixedChildren, child)
 
 	return result
 }
@@ -123,6 +134,12 @@ func (result Result) PassesChilds() bool {
 		}
 	}
 
+	for _, child := range result.prefixedChildren {
+		if !child.Passes() {
+			return false
+		}
+	}
+
 	return true
 }
 
@@ -164,13 +181,15 @@ func (result Result) Translate(dictionaries ...Dictionary) Result {
 
 func Uncertain(value any, code string) Result {
 	return Result{
-		ok:         false,
-		conditions: make([]Condition, 0),
-		Attribute:  "attribute",
-		Value:      value,
-		Code:       code,
-		Message:    code,
-		Metadata:   make(Metadata),
+		ok:               false,
+		conditions:       make([]Condition, 0),
+		children:         make(Results, 0),
+		prefixedChildren: make(Results, 0),
+		Attribute:        "attribute",
+		Value:            value,
+		Code:             code,
+		Message:          code,
+		Metadata:         make(Metadata),
 	}
 }
 

@@ -15,7 +15,7 @@ func MapValues[M map[K]V, K comparable, V any](rules ...golidate.Rule) golidate.
 			for _, rule := range rules {
 				for key, current := range iterable {
 					res := rule(current).Name(fmt.Sprintf("%+v", key))
-					result = result.WithChild(res)
+					result = result.WithPrefixedChild(res)
 				}
 			}
 
