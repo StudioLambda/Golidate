@@ -2,7 +2,6 @@ package golidate
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"reflect"
 )
@@ -107,9 +106,6 @@ func (pending Pending) Validate(ctx context.Context) Results {
 
 		results = append(results, expanded...)
 	}
-
-	j, _ := json.Marshal(results)
-	fmt.Printf("\n\nFINAL: %s\n\n", string(j))
 
 	return append(results, pending.recursiveValidate(ctx)...)
 }

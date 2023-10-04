@@ -16,7 +16,6 @@ func SliceValues[S ~[]T, T any](rules ...golidate.Rule) golidate.Rule {
 				for i, current := range iterable {
 					res := rule(current).Name(fmt.Sprintf("%d", i))
 					result = result.WithPrefixedChild(res)
-					fmt.Println("Passes?", res.Passes())
 				}
 			}
 
