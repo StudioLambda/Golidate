@@ -10,15 +10,17 @@ type Pending struct {
 	value     any
 	attribute string
 	rules     []Rule
+	self      bool
 }
 
-func Value(value any) Pending {
+func pending(value any, self bool) Pending {
 	reflected := reflect.ValueOf(value)
 	if reflected.Kind() == reflect.Ptr && !reflected.IsNil() {
 		return Pending{
 			value:     reflected.Elem().Interface(),
 			attribute: "",
 			rules:     make([]Rule, 0),
+			self:      self,
 		}
 	}
 
@@ -26,7 +28,16 @@ func Value(value any) Pending {
 		value:     value,
 		attribute: "",
 		rules:     make([]Rule, 0),
+		self:      self,
 	}
+}
+
+func Value(value any) Pending {
+	return pending(value, false)
+}
+
+func Self(value any) Pending {
+	return pending(value, true)
 }
 
 func (pending Pending) Rules(rules ...Rule) Pending {
@@ -64,12 +75,11 @@ func (pending Pending) attributeOfKey(s string) string {
 }
 
 func (pending Pending) recursiveValidate(ctx context.Context) Results {
-	if validatable, ok := pending.value.(Validator); ok {
+	if validatable, ok := pending.value.(Validator); ok && !pending.self {
 		return validatable.Validate(ctx).Prefixed(pending.attribute)
 	}
 
 	results := make(Results, 0)
-
 	reflected := reflect.ValueOf(pending.value)
 
 	switch reflected.Kind() {

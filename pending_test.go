@@ -10,11 +10,25 @@ import (
 	"github.com/studiolambda/golidate/translate/language"
 )
 
+type Self int
+
+func (s Self) Validate(ctx context.Context) golidate.Results {
+	return golidate.Validate(ctx, golidate.Self(int(s)).Name("self").Rules(
+		rule.Min(0), rule.Max(10),
+	))
+}
+
 func TestValue(t *testing.T) {
 	value := golidate.Value(42)
 
 	require.NotEmpty(t, value)
 	require.IsType(t, golidate.Pending{}, value)
+}
+
+func TestSelf(t *testing.T) {
+	results := Self(5).Validate(context.Background())
+
+	require.True(t, results.PassesAll())
 }
 
 func TestPendingRules(t *testing.T) {
