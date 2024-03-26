@@ -33,6 +33,7 @@ var English = golidate.Dictionary{
 	"has_prefix":     translate.Simple("the :attribute field must start with @prefix"),
 	"has_suffix":     translate.Simple("the :attribute field must end with @suffix"),
 	"in":             translate.Simple("the :attribute field must be one of @values"),
+	"in_typed":       translate.Simple("the :attribute field must be one of @values"),
 	"len":            translate.Simple("the :attribute field must be exactly @len characters long"),
 	"lowercase":      translate.Simple("the :attribute field must only contain lowercase letters"),
 	"mac":            translate.Simple("the :attribute field must be a valid MAC address"),
