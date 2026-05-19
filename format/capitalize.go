@@ -1,6 +1,7 @@
 package format
 
 import (
+	"strings"
 	"unicode"
 
 	"github.com/studiolambda/golidate"
@@ -12,8 +13,20 @@ func Capitalize() golidate.Formatter {
 			return message
 		}
 
-		uppercased := unicode.ToUpper(rune(message[0]))
+		r, size := firstRune(message)
+		uppercased := unicode.ToUpper(r)
 
-		return string(uppercased) + message[1:]
+		return string(uppercased) + message[size:]
 	}
+}
+
+func firstRune(message string) (rune, int) {
+	reader := strings.NewReader(message)
+	r, size, err := reader.ReadRune()
+
+	if err != nil {
+		return 0, 0
+	}
+
+	return r, size
 }

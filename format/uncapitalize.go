@@ -12,8 +12,9 @@ func Uncapitalize() golidate.Formatter {
 			return message
 		}
 
-		lowercased := unicode.ToLower(rune(message[0]))
+		r, size := firstRune(message)
+		lowercased := unicode.ToLower(r)
 
-		return string(lowercased) + message[1:]
+		return string(lowercased) + message[size:]
 	}
 }
