@@ -9,6 +9,10 @@ import (
 func Zero() golidate.Rule {
 	return func(value any) golidate.Result {
 		val := reflect.ValueOf(value)
+		if !val.IsValid() {
+			return golidate.Uncertain(value, "zero").With("zero", nil).Fail()
+		}
+
 		zero := reflect.Zero(val.Type()).Interface()
 		result := golidate.Uncertain(value, "zero").With("zero", zero)
 

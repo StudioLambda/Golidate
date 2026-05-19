@@ -26,4 +26,13 @@ func TestType(t *testing.T) {
 		require.Equal(t, 0, result.Value)
 		require.Equal(t, golidate.Metadata{"type": "string"}, result.Metadata)
 	})
+
+	t.Run("Any", func(t *testing.T) {
+		result := rule.Type[any]()(0)
+
+		require.False(t, result.Passes())
+		require.Equal(t, "type", result.Code)
+		require.Equal(t, 0, result.Value)
+		require.Equal(t, golidate.Metadata{"type": nil}, result.Metadata)
+	})
 }

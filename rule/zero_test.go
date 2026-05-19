@@ -26,4 +26,13 @@ func TestZero(t *testing.T) {
 		require.Equal(t, 10, result.Value)
 		require.Equal(t, golidate.Metadata{"zero": 0}, result.Metadata)
 	})
+
+	t.Run("Nil", func(t *testing.T) {
+		result := rule.Zero()(nil)
+
+		require.False(t, result.Passes())
+		require.Equal(t, "zero", result.Code)
+		require.Nil(t, result.Value)
+		require.Equal(t, golidate.Metadata{"zero": nil}, result.Metadata)
+	})
 }

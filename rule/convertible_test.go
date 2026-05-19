@@ -26,4 +26,22 @@ func TestConvertible(t *testing.T) {
 		require.Equal(t, "", result.Value)
 		require.Equal(t, golidate.Metadata{"type": "int"}, result.Metadata)
 	})
+
+	t.Run("Any", func(t *testing.T) {
+		result := rule.Convertible[any]()(0)
+
+		require.False(t, result.Passes())
+		require.Equal(t, "convertible", result.Code)
+		require.Equal(t, 0, result.Value)
+		require.Equal(t, golidate.Metadata{"type": nil}, result.Metadata)
+	})
+
+	t.Run("NilValue", func(t *testing.T) {
+		result := rule.Convertible[int]()(nil)
+
+		require.False(t, result.Passes())
+		require.Equal(t, "convertible", result.Code)
+		require.Nil(t, result.Value)
+		require.Equal(t, golidate.Metadata{"type": "int"}, result.Metadata)
+	})
 }

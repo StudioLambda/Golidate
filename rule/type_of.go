@@ -10,11 +10,16 @@ func TypeOf(t any) golidate.Rule {
 	return func(value any) golidate.Result {
 		of := reflect.TypeOf(t)
 		ref := reflect.TypeOf(value)
+		var typ any
+		if of != nil {
+			typ = of.String()
+		}
+
 		result := golidate.
 			Uncertain(value, "type_of").
-			With("type", of.String())
+			With("type", typ)
 
-		if ref != of {
+		if ref == nil || of == nil || ref != of {
 			return result.Fail()
 		}
 
