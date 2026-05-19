@@ -84,9 +84,10 @@ func (results Results) Messages(formatters ...Formatter) []string {
 // Translate returns results translated by the provided dictionaries.
 func (results Results) Translate(dictionaries ...Dictionary) Results {
 	res := make(Results, len(results))
+	dictionary := mergeDictionaries(dictionaries...)
 
 	for i, result := range results {
-		res[i] = result.Translate(dictionaries...)
+		res[i] = result.translate(dictionary)
 	}
 
 	return res

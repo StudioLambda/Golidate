@@ -45,6 +45,39 @@ func TestResultsTranslate(t *testing.T) {
 
 		require.Equal(t, expected.Message, translated[0].Message)
 	})
+
+	t.Run("OverridesDefaultsForMultipleResults", func(t *testing.T) {
+		results := golidate.Results{
+			golidate.Fail("ab", "min_len").Name("username").With("min", 3),
+			golidate.Fail("cd", "min_len").Name("password").With("min", 3),
+		}
+		overrides := golidate.Dictionary{
+			"min_len": func(dictionary golidate.Dictionary, result golidate.Result) golidate.Result {
+				result.Message = "override " + result.Attribute
+
+				return result
+			},
+		}
+
+		translated := results.Translate(language.English, overrides)
+
+		require.Len(t, translated, 2)
+		require.Equal(t, "override username", translated[0].Message)
+		require.Equal(t, "override password", translated[1].Message)
+	})
+
+	t.Run("UsesDefaultsForMultipleResults", func(t *testing.T) {
+		results := golidate.Results{
+			golidate.Fail("ab", "min_len").Name("username").With("min", 3),
+			golidate.Fail("cd", "min_len").Name("password").With("min", 3),
+		}
+
+		translated := results.Translate(language.English)
+
+		require.Len(t, translated, 2)
+		require.Equal(t, "the username field must be at least 3 characters long", translated[0].Message)
+		require.Equal(t, "the password field must be at least 3 characters long", translated[1].Message)
+	})
 }
 
 type NestedResults struct {

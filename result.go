@@ -189,6 +189,20 @@ func (result Result) When(condition bool) Result {
 
 // Translate returns the result translated by the provided dictionaries.
 func (result Result) Translate(dictionaries ...Dictionary) Result {
+	dictionary := mergeDictionaries(dictionaries...)
+
+	return result.translate(dictionary)
+}
+
+func (result Result) translate(dictionary Dictionary) Result {
+	if entry, ok := dictionary[result.Code]; ok {
+		return entry(dictionary, result)
+	}
+
+	return result
+}
+
+func mergeDictionaries(dictionaries ...Dictionary) Dictionary {
 	dictionary := make(Dictionary)
 
 	for _, dict := range dictionaries {
@@ -197,11 +211,7 @@ func (result Result) Translate(dictionaries ...Dictionary) Result {
 		}
 	}
 
-	if entry, ok := dictionary[result.Code]; ok {
-		return entry(dictionary, result)
-	}
-
-	return result
+	return dictionary
 }
 
 // Uncertain creates a result with an unset pass or fail state.
