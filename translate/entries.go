@@ -27,6 +27,10 @@ func Plain(message string) golidate.Entry {
 // translated with the same merged dictionary, stored back into metadata, and its
 // message is joined with separator. Other metadata shapes leave the result
 // unchanged.
+//
+// SplitFromMetadata replaces the parent result message entirely with the joined
+// child messages. The parent's original message is intentionally discarded by
+// design so compound rule output reads as a single sentence.
 func SplitFromMetadata(key string, separator string) golidate.Entry {
 	return func(dictionary golidate.Dictionary, result golidate.Result) golidate.Result {
 		if results, ok := result.Metadata[key].(golidate.Results); ok {
@@ -52,6 +56,10 @@ func SplitFromMetadata(key string, separator string) golidate.Entry {
 // Metadata placeholders use @key. Metadata keys are processed longest-first and
 // then alphabetically so overlapping placeholders such as @min and @minimum are
 // replaced deterministically.
+//
+// The :value placeholder is formatted with fmt.Sprintf("%+v", ...) and is
+// intended for debugging or developer-facing output. Prefer metadata keys for
+// user-facing display where formatting control is needed.
 func Simple(message string) golidate.Entry {
 	return func(dictionary golidate.Dictionary, result golidate.Result) golidate.Result {
 		message := strings.Clone(message)

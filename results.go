@@ -86,7 +86,9 @@ func (results Results) Prefixed(prefix string) Results {
 // Messages returns result messages after applying optional formatters.
 //
 // Messages does not translate. Call Translate first when message codes should
-// be expanded into user-facing language.
+// be expanded into user-facing language. For compound rules (And, Or, Required,
+// Optional), Translate must precede Messages so nested operation messages are
+// joined into a single readable sentence before formatting is applied.
 func (results Results) Messages(formatters ...Formatter) []string {
 	messages := make([]string, len(results))
 
@@ -104,7 +106,10 @@ func (results Results) Messages(formatters ...Formatter) []string {
 // Translate returns results translated by the provided dictionaries.
 //
 // Dictionaries are merged once for the entire slice, so layered translations
-// apply consistently and efficiently across all results.
+// apply consistently and efficiently across all results. Results with codes that
+// have no matching dictionary entry are returned unchanged with their raw code
+// as the message. Ensure custom rules register entries in at least one supplied
+// dictionary to avoid surfacing raw codes in user-facing output.
 func (results Results) Translate(dictionaries ...Dictionary) Results {
 	res := make(Results, len(results))
 	dictionary := mergeDictionaries(dictionaries...)
