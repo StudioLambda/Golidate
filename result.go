@@ -98,6 +98,10 @@ func (result Result) WithMetadata(metadata Metadata) Result {
 }
 
 func (result Result) WithMetadataMerged(metadata Metadata) Result {
+	if result.Metadata == nil {
+		result.Metadata = make(Metadata)
+	}
+
 	for key, value := range metadata {
 		result.Metadata[key] = value
 	}

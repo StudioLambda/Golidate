@@ -64,3 +64,11 @@ func TestResultWithMetadataMerged(t *testing.T) {
 	require.NotEmpty(t, res.Metadata)
 	require.Equal(t, golidate.Metadata{"test": "foo", "test2": "foo"}, res.Metadata)
 }
+
+func TestResultWithMetadataMergedInitializesNilMetadata(t *testing.T) {
+	result := golidate.Result{}.WithMetadataMerged(golidate.Metadata{
+		"test": "foo",
+	})
+
+	require.Equal(t, golidate.Metadata{"test": "foo"}, result.Metadata)
+}
