@@ -8,6 +8,7 @@ import (
 	"github.com/studiolambda/golidate/rule"
 )
 
+// TestUrl verifies pragmatic URL validation behavior.
 func TestUrl(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		result := rule.Url()("https://erik.cat/foo/bar#baz?name=john&last_name=doe")

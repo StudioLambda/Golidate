@@ -8,6 +8,7 @@ import (
 	"github.com/studiolambda/golidate/format"
 )
 
+// TestGroupedMessages verifies grouped messages apply formatters per attribute.
 func TestGroupedMessages(t *testing.T) {
 	grouped := golidate.Grouped{
 		"name": golidate.Results{

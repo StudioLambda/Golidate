@@ -8,6 +8,7 @@ import (
 	"github.com/studiolambda/golidate/rule"
 )
 
+// TestAlphaNumeric verifies ASCII letter and digit validation behavior.
 func TestAlphaNumeric(t *testing.T) {
 	t.Run("Pass", func(t *testing.T) {
 		result := rule.AlphaNumeric()("123foo123Bar123Baz123")

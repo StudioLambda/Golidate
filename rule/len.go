@@ -6,6 +6,10 @@ import (
 	"github.com/studiolambda/golidate"
 )
 
+// Len returns a rule that passes when a value has exactly exact length.
+//
+// Arrays, channels, maps, slices, and strings are supported. Nil and unsupported
+// values fail without panic recovery.
 func Len(exact int) golidate.Rule {
 	return func(value any) golidate.Result {
 		result := golidate.
@@ -21,6 +25,10 @@ func Len(exact int) golidate.Rule {
 	}
 }
 
+// lengthOf returns the length for reflection kinds that support Len.
+//
+// Nil interfaces and unsupported kinds return false so length rules fail safely
+// instead of relying on panic recovery.
 func lengthOf(value any) (int, bool) {
 	if value == nil {
 		return 0, false

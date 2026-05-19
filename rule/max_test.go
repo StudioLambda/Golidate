@@ -8,6 +8,7 @@ import (
 	"github.com/studiolambda/golidate/rule"
 )
 
+// TestMax verifies maximum numeric validation behavior.
 func TestMax(t *testing.T) {
 	t.Run("Pass", func(t *testing.T) {
 		result := rule.Max(4)(3)

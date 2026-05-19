@@ -8,6 +8,7 @@ import (
 	"github.com/studiolambda/golidate/rule"
 )
 
+// TestAlphaDash verifies dash-friendly ASCII validation behavior.
 func TestAlphaDash(t *testing.T) {
 	t.Run("Pass", func(t *testing.T) {
 		result := rule.AlphaDash()("foo_Bar-Baz")

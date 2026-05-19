@@ -8,6 +8,7 @@ import (
 	"github.com/studiolambda/golidate/rule"
 )
 
+// TestDomain verifies pragmatic domain validation behavior.
 func TestDomain(t *testing.T) {
 	t.Run("Pass", func(t *testing.T) {
 		result := rule.Domain()("erik.cat")

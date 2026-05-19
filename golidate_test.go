@@ -9,13 +9,21 @@ import (
 	"github.com/studiolambda/golidate/rule"
 )
 
+// A is a marker type used by polymorphic validation tests.
 type A struct{}
+
+// B is a marker type used by polymorphic validation tests.
 type B struct{}
+
+// EitherAorB validates its value against one of two possible marker types.
 type EitherAorB struct {
-	kind  string
+	// kind selects which marker type should be accepted.
+	kind string
+	// value stores the marker instance being validated.
 	value any
 }
 
+// Validate applies the conditional type rule selected by kind.
 func (either EitherAorB) Validate(ctx context.Context) golidate.Results {
 	return golidate.Validate(
 		ctx,
@@ -26,18 +34,27 @@ func (either EitherAorB) Validate(ctx context.Context) golidate.Results {
 	)
 }
 
+// Profile is a nested test validator for user profile fields.
 type Profile struct {
-	Name  string
+	// Name stores the profile display name used in nested validation.
+	Name string
+	// Email stores the profile email used in nested validation.
 	Email string
-	Age   int
+	// Age stores the profile age checked by a minimum rule.
+	Age int
 }
 
+// User is a parent test validator containing direct and nested values.
 type User struct {
+	// Username stores the user name checked by a non-nil rule.
 	Username string
+	// Password stores the password checked by a non-nil rule.
 	Password string
-	Profile  Profile
+	// Profile stores nested profile data validated recursively.
+	Profile Profile
 }
 
+// Validate validates direct user fields and delegates to Profile validation.
 func (user User) Validate(ctx context.Context) golidate.Results {
 	return golidate.Validate(
 		ctx,
@@ -51,6 +68,7 @@ func (user User) Validate(ctx context.Context) golidate.Results {
 	)
 }
 
+// Validate validates profile fields used by nested validation tests.
 func (user Profile) Validate(ctx context.Context) golidate.Results {
 	return golidate.Validate(
 		ctx,
@@ -64,6 +82,7 @@ func (user Profile) Validate(ctx context.Context) golidate.Results {
 	)
 }
 
+// TestValidate verifies top-level and nested validation pass/fail behavior.
 func TestValidate(t *testing.T) {
 	t.Run("SinglePass", func(t *testing.T) {
 		results := golidate.Validate(
@@ -165,6 +184,7 @@ func TestValidate(t *testing.T) {
 	})
 }
 
+// TestPolymorphism verifies conditionally applied type rules.
 func TestPolymorphism(t *testing.T) {
 	t.Run("SuccessA", func(t *testing.T) {
 		result := EitherAorB{kind: "a", value: A{}}.Validate(context.Background())
@@ -185,14 +205,19 @@ func TestPolymorphism(t *testing.T) {
 	})
 }
 
+// ContextValue validates a number using a maximum read from context.
 type ContextValue struct {
+	// Value stores the number checked by context-driven limits.
 	Value int
 }
 
+// maxKeyStruct is the private context key type for maximum values.
 type maxKeyStruct struct{}
 
+// MaxKey is the context key used by ContextValue validation.
 var MaxKey = maxKeyStruct{}
 
+// Validate validates ContextValue using a context-provided maximum.
 func (c ContextValue) Validate(ctx context.Context) golidate.Results {
 	max := ctx.Value(MaxKey).(int64)
 	return golidate.Validate(
@@ -204,6 +229,7 @@ func (c ContextValue) Validate(ctx context.Context) golidate.Results {
 	)
 }
 
+// TestContextValues verifies validators can consume context values.
 func TestContextValues(t *testing.T) {
 	value := ContextValue{Value: 10}
 	ctx := context.WithValue(context.Background(), MaxKey, int64(15))
@@ -217,6 +243,7 @@ func TestContextValues(t *testing.T) {
 	require.False(t, result.PassesAll())
 }
 
+// TestComplexErrorKeys verifies nested slice and map attribute naming.
 func TestComplexErrorKeys(t *testing.T) {
 	t.Run("Slices", func(t *testing.T) {
 		value := [][]int{{1, 5}, {10, 15}, {25, 30}}

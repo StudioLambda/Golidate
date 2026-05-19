@@ -8,6 +8,7 @@ import (
 	"github.com/studiolambda/golidate/rule"
 )
 
+// TestAccepted verifies accepted string values pass and other values fail.
 func TestAccepted(t *testing.T) {
 	t.Run("Pass", func(t *testing.T) {
 		for _, value := range rule.AcceptedValues {
@@ -29,6 +30,7 @@ func TestAccepted(t *testing.T) {
 	})
 }
 
+// TestAcceptedUsesCopiedValues verifies Accepted does not share exported slice state.
 func TestAcceptedUsesCopiedValues(t *testing.T) {
 	rule.AcceptedValues[0] = "changed"
 	t.Cleanup(func() {

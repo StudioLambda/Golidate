@@ -8,6 +8,7 @@ import (
 	"github.com/studiolambda/golidate/rule"
 )
 
+// TestMac verifies colon-separated MAC address validation behavior.
 func TestMac(t *testing.T) {
 	t.Run("Pass", func(t *testing.T) {
 		result := rule.Mac()("00:00:00:00:00:00")

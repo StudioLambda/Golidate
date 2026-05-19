@@ -7,6 +7,7 @@ import (
 	"github.com/studiolambda/golidate"
 )
 
+// TestResultFail verifies a failing result preserves code, value, and metadata.
 func TestResultFail(t *testing.T) {
 	res := golidate.Uncertain("something", "test").Fail()
 
@@ -15,6 +16,7 @@ func TestResultFail(t *testing.T) {
 	require.Empty(t, res.Metadata)
 }
 
+// TestResultWith verifies metadata can be added one key at a time.
 func TestResultWith(t *testing.T) {
 	res := golidate.
 		Uncertain("something", "test").
@@ -28,6 +30,7 @@ func TestResultWith(t *testing.T) {
 	require.Equal(t, golidate.Metadata{"test": "foo", "test2": "bar"}, res.Metadata)
 }
 
+// TestResultWithMetadata verifies metadata can be replaced wholesale.
 func TestResultWithMetadata(t *testing.T) {
 	metadata := golidate.Metadata{
 		"test": "foo",
@@ -44,6 +47,7 @@ func TestResultWithMetadata(t *testing.T) {
 	require.Equal(t, metadata, res.Metadata)
 }
 
+// TestResultWithMetadataMerged verifies metadata maps merge without dropping keys.
 func TestResultWithMetadataMerged(t *testing.T) {
 	metadata := golidate.Metadata{
 		"test": "foo",
@@ -65,6 +69,7 @@ func TestResultWithMetadataMerged(t *testing.T) {
 	require.Equal(t, golidate.Metadata{"test": "foo", "test2": "foo"}, res.Metadata)
 }
 
+// TestResultWithMetadataMergedInitializesNilMetadata verifies nil metadata merging.
 func TestResultWithMetadataMergedInitializesNilMetadata(t *testing.T) {
 	result := golidate.Result{}.WithMetadataMerged(golidate.Metadata{
 		"test": "foo",

@@ -10,18 +10,23 @@ import (
 	"github.com/studiolambda/golidate/translate/language"
 )
 
+// Self is a test value that validates itself through golidate.Self.
 type Self int
 
+// Validate applies numeric rules to the underlying Self integer.
 func (s Self) Validate(ctx context.Context) golidate.Results {
 	return golidate.Validate(ctx, golidate.Self(int(s)).Name("self").Rules(
 		rule.Min(0), rule.Max(10),
 	))
 }
 
+// PointerOnly is a test validator with only a pointer receiver Validate method.
 type PointerOnly struct {
+	// Cp stores the number checked by pointer-receiver validation.
 	Cp int
 }
 
+// Validate applies numeric rules through a pointer receiver.
 func (p *PointerOnly) Validate(ctx context.Context) golidate.Results {
 	return golidate.Validate(
 		ctx,
@@ -32,6 +37,7 @@ func (p *PointerOnly) Validate(ctx context.Context) golidate.Results {
 	)
 }
 
+// TestValue verifies Value returns a non-empty Pending builder.
 func TestValue(t *testing.T) {
 	value := golidate.Value(42)
 
@@ -39,12 +45,14 @@ func TestValue(t *testing.T) {
 	require.IsType(t, golidate.Pending{}, value)
 }
 
+// TestSelf verifies Self disables recursive Validator handling for a value.
 func TestSelf(t *testing.T) {
 	results := Self(5).Validate(context.Background())
 
 	require.True(t, results.PassesAll())
 }
 
+// TestPendingRules verifies pending rules are applied to the value.
 func TestPendingRules(t *testing.T) {
 	result := golidate.
 		Value(20).
@@ -54,6 +62,7 @@ func TestPendingRules(t *testing.T) {
 	require.False(t, result.PassesAll())
 }
 
+// TestPendingValidate verifies a pending value with no rules passes.
 func TestPendingValidate(t *testing.T) {
 	result := golidate.
 		Value(20).
@@ -62,10 +71,13 @@ func TestPendingValidate(t *testing.T) {
 	require.True(t, result.PassesAll())
 }
 
+// Bs is a nested validator used by recursive pending validation tests.
 type Bs struct {
+	// Cp stores the number checked by Bs validation.
 	Cp int
 }
 
+// Validate applies numeric rules to Bs.Cp.
 func (b Bs) Validate(ctx context.Context) golidate.Results {
 	return golidate.Validate(
 		ctx,
@@ -76,12 +88,17 @@ func (b Bs) Validate(ctx context.Context) golidate.Results {
 	)
 }
 
+// As is a parent validator containing nested struct, slice, and map values.
 type As struct {
+	// Bp stores a direct nested validator.
 	Bp Bs
+	// Dp stores nested validators in a slice.
 	Dp []Bs
+	// Ep stores nested validators in a map.
 	Ep map[string]Bs
 }
 
+// Validate delegates to the nested validators stored in As.
 func (a As) Validate(ctx context.Context) golidate.Results {
 	return golidate.Validate(
 		ctx,
@@ -91,6 +108,7 @@ func (a As) Validate(ctx context.Context) golidate.Results {
 	)
 }
 
+// TestRecursiveValidate verifies recursive validation prefixes nested attributes.
 func TestRecursiveValidate(t *testing.T) {
 	a := As{
 		Bp: Bs{Cp: 40},
@@ -115,6 +133,7 @@ func TestRecursiveValidate(t *testing.T) {
 	require.True(t, failed.Has("ep.foo.cp"))
 }
 
+// TestRecursiveValidateFormatsNonStringMapKeys verifies formatted key attributes.
 func TestRecursiveValidateFormatsNonStringMapKeys(t *testing.T) {
 	values := map[int]Bs{
 		42: {Cp: 30},
@@ -129,6 +148,7 @@ func TestRecursiveValidateFormatsNonStringMapKeys(t *testing.T) {
 	require.True(t, failed.Has("items.42.cp"))
 }
 
+// TestRecursiveValidateMapOrder verifies deterministic recursive map ordering.
 func TestRecursiveValidateMapOrder(t *testing.T) {
 	values := map[string]Bs{
 		"c": {Cp: 30},
@@ -148,6 +168,7 @@ func TestRecursiveValidateMapOrder(t *testing.T) {
 	require.Equal(t, "items.c.cp", failed[2].Attribute)
 }
 
+// TestRecursiveValidatePointerReceiver verifies pointer-only validators run.
 func TestRecursiveValidatePointerReceiver(t *testing.T) {
 	value := &PointerOnly{Cp: 40}
 
@@ -160,6 +181,7 @@ func TestRecursiveValidatePointerReceiver(t *testing.T) {
 	require.True(t, failed.Has("cp"))
 }
 
+// TestPointerValue verifies pointer dereferencing and nil pointer behavior.
 func TestPointerValue(t *testing.T) {
 	t.Run("PointerPass", func(t *testing.T) {
 		realValue := 10

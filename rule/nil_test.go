@@ -7,6 +7,7 @@ import (
 	"github.com/studiolambda/golidate/rule"
 )
 
+// TestNil verifies nil and nil-capable value validation behavior.
 func TestNil(t *testing.T) {
 	t.Run("Pass", func(t *testing.T) {
 		result := rule.Nil()(nil)

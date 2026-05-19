@@ -8,6 +8,7 @@ import (
 	"github.com/studiolambda/golidate/rule"
 )
 
+// TestLen verifies exact length validation behavior.
 func TestLen(t *testing.T) {
 	t.Run("Pass", func(t *testing.T) {
 		result := rule.Len(4)("asdf")

@@ -8,6 +8,7 @@ import (
 	"github.com/studiolambda/golidate/rule"
 )
 
+// TestSliceValues verifies slice element child validation behavior.
 func TestSliceValues(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		value := []int{10, 15, 20}

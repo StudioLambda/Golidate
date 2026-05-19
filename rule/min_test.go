@@ -8,6 +8,7 @@ import (
 	"github.com/studiolambda/golidate/rule"
 )
 
+// TestMin verifies minimum numeric validation behavior.
 func TestMin(t *testing.T) {
 	t.Run("Pass", func(t *testing.T) {
 		result := rule.Min(4)(5)

@@ -9,6 +9,7 @@ import (
 	"github.com/studiolambda/golidate/translate/language"
 )
 
+// ExampleValidate demonstrates validating one value and translating failures.
 func ExampleValidate() {
 	results := golidate.Validate(
 		context.Background(),

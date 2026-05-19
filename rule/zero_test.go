@@ -8,6 +8,7 @@ import (
 	"github.com/studiolambda/golidate/rule"
 )
 
+// TestZero verifies zero-value validation behavior.
 func TestZero(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		result := rule.Zero()(0)

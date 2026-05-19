@@ -8,6 +8,7 @@ import (
 	"github.com/studiolambda/golidate/rule"
 )
 
+// TestMaxLen verifies maximum length validation behavior.
 func TestMaxLen(t *testing.T) {
 	t.Run("Pass", func(t *testing.T) {
 		result := rule.MaxLen(4)("asd")

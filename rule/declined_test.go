@@ -8,6 +8,7 @@ import (
 	"github.com/studiolambda/golidate/rule"
 )
 
+// TestDeclined verifies declined string values pass and other values fail.
 func TestDeclined(t *testing.T) {
 	t.Run("Pass", func(t *testing.T) {
 		for _, value := range rule.DeclinedValues {
@@ -30,6 +31,7 @@ func TestDeclined(t *testing.T) {
 	})
 }
 
+// TestDeclinedUsesCopiedValues verifies Declined does not share exported slice state.
 func TestDeclinedUsesCopiedValues(t *testing.T) {
 	rule.DeclinedValues[0] = "changed"
 	t.Cleanup(func() {

@@ -8,6 +8,7 @@ import (
 	"github.com/studiolambda/golidate/rule"
 )
 
+// TestAscii verifies single-byte ASCII validation behavior.
 func TestAscii(t *testing.T) {
 	t.Run("Pass", func(t *testing.T) {
 		result := rule.Ascii()("example")

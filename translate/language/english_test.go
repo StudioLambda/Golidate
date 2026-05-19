@@ -9,6 +9,7 @@ import (
 	"github.com/studiolambda/golidate/translate/language"
 )
 
+// TestEnglishInvertDoesNotMutateWordsContainingMust verifies standalone negation.
 func TestEnglishInvertDoesNotMutateWordsContainingMust(t *testing.T) {
 	dictionary := golidate.Dictionary{
 		"custom": translate.Simple("the :attribute field must be mustard"),
@@ -23,6 +24,7 @@ func TestEnglishInvertDoesNotMutateWordsContainingMust(t *testing.T) {
 	require.Equal(t, "the attribute field must not be mustard", translated.Message)
 }
 
+// TestEnglishInvertRemovesExistingNegation verifies negation can be toggled off.
 func TestEnglishInvertRemovesExistingNegation(t *testing.T) {
 	dictionary := golidate.Dictionary{
 		"custom": translate.Simple("the :attribute field must not be empty"),

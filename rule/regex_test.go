@@ -9,6 +9,7 @@ import (
 	"github.com/studiolambda/golidate/rule"
 )
 
+// TestRegex verifies regular expression validation behavior.
 func TestRegex(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		expression := regexp.MustCompile(`^[a-z]+$`)

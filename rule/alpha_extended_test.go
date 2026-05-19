@@ -8,6 +8,7 @@ import (
 	"github.com/studiolambda/golidate/rule"
 )
 
+// TestAlphaExtended verifies extended slug validation behavior.
 func TestAlphaExtended(t *testing.T) {
 	t.Run("Pass", func(t *testing.T) {
 		result := rule.AlphaExtended()("123foo123.Bar_123Baz123")

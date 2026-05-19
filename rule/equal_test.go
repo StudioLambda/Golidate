@@ -8,6 +8,7 @@ import (
 	"github.com/studiolambda/golidate/rule"
 )
 
+// TestEqual verifies DeepEqual-based comparison behavior.
 func TestEqual(t *testing.T) {
 	t.Run("Pass", func(t *testing.T) {
 		result := rule.Equal("foo")("foo")

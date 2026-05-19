@@ -8,6 +8,7 @@ import (
 	"github.com/studiolambda/golidate/rule"
 )
 
+// TestTypeOf verifies exact dynamic type validation behavior.
 func TestTypeOf(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		result := rule.TypeOf("")("foo")

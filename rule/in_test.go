@@ -8,6 +8,7 @@ import (
 	"github.com/studiolambda/golidate/rule"
 )
 
+// TestIn verifies strict membership comparison and metadata output.
 func TestIn(t *testing.T) {
 	t.Run("Pass", func(t *testing.T) {
 		values := []any{"a", "b", "c"}

@@ -8,6 +8,7 @@ import (
 	"github.com/studiolambda/golidate/rule"
 )
 
+// TestMapKeys verifies map key child validation behavior.
 func TestMapKeys(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		value := map[string]int{

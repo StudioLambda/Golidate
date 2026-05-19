@@ -6,6 +6,11 @@ import (
 	"github.com/studiolambda/golidate"
 )
 
+// Min returns a rule that passes for numeric values greater than or equal to min.
+//
+// Signed integers, unsigned integers, and floats are accepted. Values are
+// compared as float64 so decimal inputs can satisfy integer limits. Non-numeric
+// values and nil fail without panicking.
 func Min(min int64) golidate.Rule {
 	return func(value any) golidate.Result {
 		result := golidate.
@@ -22,6 +27,10 @@ func Min(min int64) golidate.Rule {
 	}
 }
 
+// numberValue extracts a supported numeric value as float64.
+//
+// Invalid reflection values, nil interfaces, and non-numeric kinds return false
+// instead of panicking.
 func numberValue(value any) (float64, bool) {
 	reflected := reflect.ValueOf(value)
 

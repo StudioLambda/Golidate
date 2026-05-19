@@ -8,6 +8,7 @@ import (
 	"github.com/studiolambda/golidate/rule"
 )
 
+// TestEmail verifies pragmatic email validation behavior.
 func TestEmail(t *testing.T) {
 	t.Run("Pass", func(t *testing.T) {
 		result := rule.Email()("foo@bar.baz")

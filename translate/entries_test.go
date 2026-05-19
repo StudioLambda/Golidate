@@ -9,6 +9,7 @@ import (
 	"github.com/studiolambda/golidate/translate/language"
 )
 
+// TestSimple verifies placeholder replacement for attributes, codes, values, and metadata.
 func TestSimple(t *testing.T) {
 	result := golidate.
 		Uncertain(10, "simple").
@@ -21,6 +22,7 @@ func TestSimple(t *testing.T) {
 	require.Equal(t, "my_field from simple is 10 must be something else", translation.Message)
 }
 
+// TestSimpleReplacesOverlappingMetadata verifies deterministic metadata replacement.
 func TestSimpleReplacesOverlappingMetadata(t *testing.T) {
 	result := golidate.
 		Uncertain(10, "simple").

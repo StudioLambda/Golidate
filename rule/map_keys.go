@@ -7,11 +7,19 @@ import (
 	"github.com/studiolambda/golidate"
 )
 
+// formattedMapKey stores a map key with the text used for stable ordering.
 type formattedMapKey[K comparable] struct {
+	// name is the formatted key text used in attributes and sorting.
 	name string
-	key  K
+	// key is the original typed map key used to read from the map.
+	key K
 }
 
+// MapKeys returns a rule that applies child rules to every key in a map.
+//
+// The value must have the exact map type M. Keys are formatted and sorted before
+// validation so child results have deterministic order. Child attributes are
+// bracketed key names such as settings.[enabled].
 func MapKeys[M ~map[K]V, K comparable, V any](rules ...golidate.Rule) golidate.Rule {
 	return func(value any) golidate.Result {
 		result := golidate.
@@ -32,6 +40,10 @@ func MapKeys[M ~map[K]V, K comparable, V any](rules ...golidate.Rule) golidate.R
 	}
 }
 
+// sortedFormattedMapKeys returns map keys in deterministic formatted order.
+//
+// Sorting by formatted names keeps map key validation stable despite Go's
+// randomized map iteration order.
 func sortedFormattedMapKeys[M ~map[K]V, K comparable, V any](iterable M) []formattedMapKey[K] {
 	keys := make([]formattedMapKey[K], 0, len(iterable))
 

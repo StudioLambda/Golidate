@@ -8,6 +8,7 @@ import (
 	"github.com/studiolambda/golidate/rule"
 )
 
+// TestHasPrefix verifies formatted-value prefix validation behavior.
 func TestHasPrefix(t *testing.T) {
 	t.Run("Pass", func(t *testing.T) {
 		result := rule.HasPrefix("foo")("foo bar")

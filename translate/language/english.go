@@ -9,19 +9,22 @@ import (
 )
 
 var (
-	mustPattern        = regexp.MustCompile(`\bmust\b`)
+	// mustPattern locates standalone "must" tokens for English negation.
+	mustPattern = regexp.MustCompile(`\bmust\b`)
+	// negatedMustPattern detects an existing "not" immediately after "must".
 	negatedMustPattern = regexp.MustCompile(`^\s+not\b`)
 )
 
-// The English language for golidate. Please
-// note that there are some special keywords
-// that are used to split the message into multiple
-// parts or inverse its meaning.
+// English is the built-in English translation dictionary for golidate.
+//
+// Compound entries use special joining phrases such as "and also" and "or else".
+// The not entry inverts standalone "must" and "must not" phrases without
+// changing words that merely contain those letters.
 //
 // These keywords are: `and also`, `or else`, `must`, `must not`
 //
-// Try finding alternative words if there is the need to write those
-// keywords in the message without triggering the special behavior.`
+// Try alternate wording if a custom message needs those exact phrases without
+// triggering compound or negation behavior.
 var English = golidate.Dictionary{
 	"accepted":       translate.Simple("the :attribute field must be one of @values"),
 	"alpha":          translate.Simple("the :attribute field must only contain letters"),
@@ -63,6 +66,11 @@ var English = golidate.Dictionary{
 	"zero":           translate.Simple("the :attribute field must be a zero value"),
 }
 
+// Invert translates a nested operation and flips its English "must" wording.
+//
+// The nested operation is expected in result metadata under "operation". If it
+// is present, the translated operation is written back into metadata so callers
+// can inspect the same message that was used for inversion.
 func Invert(dictionary golidate.Dictionary, result golidate.Result) golidate.Result {
 	message := result.Message
 
@@ -77,6 +85,10 @@ func Invert(dictionary golidate.Dictionary, result golidate.Result) golidate.Res
 	return result
 }
 
+// invertMust toggles standalone English "must" and "must not" phrases.
+//
+// Words such as "mustard" are intentionally ignored. Existing negation is
+// removed, while a positive "must" receives "not".
 func invertMust(message string) string {
 	matches := mustPattern.FindAllStringIndex(message, -1)
 

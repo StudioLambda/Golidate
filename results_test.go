@@ -11,6 +11,7 @@ import (
 	"github.com/studiolambda/golidate/translate/language"
 )
 
+// TestResultsTranslate verifies dictionary translation and override behavior.
 func TestResultsTranslate(t *testing.T) {
 	t.Run("Simple", func(t *testing.T) {
 		results := golidate.Validate(
@@ -80,11 +81,15 @@ func TestResultsTranslate(t *testing.T) {
 	})
 }
 
+// NestedResults is a test validator with direct and nested child failures.
 type NestedResults struct {
-	Name    string
+	// Name stores the value checked by a minimum length rule.
+	Name string
+	// Numbers stores values checked through SliceValues.
 	Numbers []int
 }
 
+// Validate validates NestedResults fields for grouping tests.
 func (n NestedResults) Validate(ctx context.Context) golidate.Results {
 	return golidate.Validate(
 		ctx,
@@ -100,6 +105,7 @@ func (n NestedResults) Validate(ctx context.Context) golidate.Results {
 	)
 }
 
+// TestResultsGroup verifies failed translated results can be grouped by attribute.
 func TestResultsGroup(t *testing.T) {
 	nested := NestedResults{Numbers: []int{1, 2, 30}}
 
@@ -137,6 +143,7 @@ func TestResultsGroup(t *testing.T) {
 	require.True(t, ok2)
 }
 
+// TestResultsClassifiesUnflattenedChildren verifies direct child state is included.
 func TestResultsClassifiesUnflattenedChildren(t *testing.T) {
 	results := golidate.Results{
 		rule.SliceValues[[]int](rule.Max(10))([]int{5, 20}),

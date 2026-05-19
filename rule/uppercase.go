@@ -7,6 +7,10 @@ import (
 	"github.com/studiolambda/golidate"
 )
 
+// Uppercase returns a rule that passes when all letters are uppercase.
+//
+// Values are formatted with fmt.Sprintf before inspection. Non-letter runes are
+// ignored, so digits, punctuation, symbols, and spaces do not cause a failure.
 func Uppercase() golidate.Rule {
 	return func(value any) golidate.Result {
 		result := golidate.

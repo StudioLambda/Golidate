@@ -8,6 +8,7 @@ import (
 	"github.com/studiolambda/golidate/rule"
 )
 
+// TestAlpha verifies ASCII letter-only validation behavior.
 func TestAlpha(t *testing.T) {
 	t.Run("Pass", func(t *testing.T) {
 		result := rule.Alpha()("fooBarBaz")

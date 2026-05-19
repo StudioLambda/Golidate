@@ -6,6 +6,10 @@ import (
 	"github.com/studiolambda/golidate"
 )
 
+// Zero returns a rule that passes when value is the zero value of its type.
+//
+// Invalid nil interfaces fail because no concrete type exists from which to
+// derive a zero value. The expected zero value is stored in metadata as "zero".
 func Zero() golidate.Rule {
 	return func(value any) golidate.Result {
 		val := reflect.ValueOf(value)

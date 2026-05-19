@@ -8,6 +8,7 @@ import (
 	"github.com/studiolambda/golidate/rule"
 )
 
+// TestMinLen verifies minimum length validation behavior.
 func TestMinLen(t *testing.T) {
 	t.Run("Pass", func(t *testing.T) {
 		result := rule.MinLen(4)("asdfe")

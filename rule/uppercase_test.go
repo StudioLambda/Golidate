@@ -8,6 +8,7 @@ import (
 	"github.com/studiolambda/golidate/rule"
 )
 
+// TestUppercase verifies uppercase letter validation behavior.
 func TestUppercase(t *testing.T) {
 	t.Run("Pass", func(t *testing.T) {
 		result := rule.Uppercase()("FOO BAR BAZ")

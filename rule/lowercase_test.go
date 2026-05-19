@@ -8,6 +8,7 @@ import (
 	"github.com/studiolambda/golidate/rule"
 )
 
+// TestLowercase verifies lowercase letter validation behavior.
 func TestLowercase(t *testing.T) {
 	t.Run("Pass", func(t *testing.T) {
 		result := rule.Lowercase()("foo bar baz")

@@ -8,6 +8,7 @@ import (
 	"github.com/studiolambda/golidate/rule"
 )
 
+// TestBoolean verifies boolean-like string values pass and other values fail.
 func TestBoolean(t *testing.T) {
 	t.Run("Pass", func(t *testing.T) {
 		for _, value := range rule.BooleanValues {
@@ -30,6 +31,7 @@ func TestBoolean(t *testing.T) {
 	})
 }
 
+// TestBooleanUsesCopiedValues verifies Boolean does not share exported slice state.
 func TestBooleanUsesCopiedValues(t *testing.T) {
 	rule.BooleanValues[0] = "changed"
 	t.Cleanup(func() {

@@ -8,6 +8,7 @@ import (
 	"github.com/studiolambda/golidate/rule"
 )
 
+// TestType verifies exact generic type validation behavior.
 func TestType(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		result := rule.Type[string]()("")

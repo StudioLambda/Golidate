@@ -9,6 +9,10 @@ import (
 	"github.com/studiolambda/golidate"
 )
 
+// Plain returns an entry that replaces the result message with fixed text.
+//
+// Plain ignores the dictionary and result metadata. It is useful for simple
+// codes whose message does not need placeholders.
 func Plain(message string) golidate.Entry {
 	return func(dictionary golidate.Dictionary, result golidate.Result) golidate.Result {
 		result.Message = message
@@ -17,6 +21,12 @@ func Plain(message string) golidate.Entry {
 	}
 }
 
+// SplitFromMetadata returns an entry that joins translated nested messages.
+//
+// The metadata value at key must be golidate.Results. Each nested result is
+// translated with the same merged dictionary, stored back into metadata, and its
+// message is joined with separator. Other metadata shapes leave the result
+// unchanged.
 func SplitFromMetadata(key string, separator string) golidate.Entry {
 	return func(dictionary golidate.Dictionary, result golidate.Result) golidate.Result {
 		if results, ok := result.Metadata[key].(golidate.Results); ok {
@@ -36,6 +46,12 @@ func SplitFromMetadata(key string, separator string) golidate.Entry {
 	}
 }
 
+// Simple returns an entry that expands common placeholders in a message.
+//
+// Supported colon placeholders are :attribute, :code, :message, and :value.
+// Metadata placeholders use @key. Metadata keys are processed longest-first and
+// then alphabetically so overlapping placeholders such as @min and @minimum are
+// replaced deterministically.
 func Simple(message string) golidate.Entry {
 	return func(dictionary golidate.Dictionary, result golidate.Result) golidate.Result {
 		message := strings.Clone(message)
@@ -64,6 +80,11 @@ func Simple(message string) golidate.Entry {
 	}
 }
 
+// metadataKeys returns metadata keys in deterministic replacement order.
+//
+// Longer keys are returned before shorter keys so one placeholder cannot consume
+// the prefix of another. Equal-length keys are sorted alphabetically for stable
+// translation output.
 func metadataKeys(metadata golidate.Metadata) []string {
 	keys := make([]string, 0, len(metadata))
 

@@ -8,6 +8,7 @@ import (
 	"github.com/studiolambda/golidate/rule"
 )
 
+// TestConvertible verifies reflection-based convertibility validation behavior.
 func TestConvertible(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		result := rule.Convertible[string]()(0)

@@ -8,6 +8,7 @@ import (
 	"github.com/studiolambda/golidate/rule"
 )
 
+// TestInTyped verifies typed membership validation behavior.
 func TestInTyped(t *testing.T) {
 	t.Run("Pass", func(t *testing.T) {
 		values := []string{"a", "b", "c"}

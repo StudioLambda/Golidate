@@ -8,6 +8,7 @@ import (
 	"github.com/studiolambda/golidate/rule"
 )
 
+// TestHasSuffix verifies formatted-value suffix validation behavior.
 func TestHasSuffix(t *testing.T) {
 	t.Run("Pass", func(t *testing.T) {
 		result := rule.HasSuffix("bar")("foo bar")
