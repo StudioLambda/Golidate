@@ -4,7 +4,7 @@ type Results []Result
 
 func (results Results) PassesAll() bool {
 	for _, result := range results {
-		if !result.Passes() {
+		if !result.PassesAll() {
 			return false
 		}
 	}
@@ -14,7 +14,7 @@ func (results Results) PassesAll() bool {
 
 func (results Results) PassesAny() bool {
 	for _, result := range results {
-		if result.Passes() {
+		if result.PassesAll() {
 			return true
 		}
 	}
@@ -26,7 +26,7 @@ func (results Results) Failed() Results {
 	failed := make(Results, 0, len(results))
 
 	for _, result := range results {
-		if !result.Passes() {
+		if !result.PassesAll() {
 			failed = append(failed, result)
 		}
 	}
@@ -38,7 +38,7 @@ func (results Results) Passed() Results {
 	passed := make(Results, 0, len(results))
 
 	for _, result := range results {
-		if result.Passes() {
+		if result.PassesAll() {
 			passed = append(passed, result)
 		}
 	}

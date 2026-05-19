@@ -95,11 +95,22 @@ func TestResultsGroup(t *testing.T) {
 		Group().
 		Messages(format.Capitalize(), format.Punctuate())
 
-	require.Len(t, grouped, 4)
+	require.Len(t, grouped, 5)
 
 	_, ok := grouped["username"]
 	_, ok2 := grouped["password"]
 
 	require.True(t, ok)
 	require.True(t, ok2)
+}
+
+func TestResultsClassifiesUnflattenedChildren(t *testing.T) {
+	results := golidate.Results{
+		rule.SliceValues[[]int](rule.Max(10))([]int{5, 20}),
+	}
+
+	require.False(t, results.PassesAll())
+	require.False(t, results.PassesAny())
+	require.Len(t, results.Failed(), 1)
+	require.Empty(t, results.Passed())
 }
