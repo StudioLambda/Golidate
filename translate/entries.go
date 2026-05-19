@@ -55,7 +55,13 @@ func SplitFromMetadata(key string, separator string) golidate.Entry {
 func Simple(message string) golidate.Entry {
 	return func(dictionary golidate.Dictionary, result golidate.Result) golidate.Result {
 		message := strings.Clone(message)
-		message = strings.ReplaceAll(message, ":attribute", result.Attribute)
+
+		attribute := result.Attribute
+		if attribute == "" {
+			attribute = "attribute"
+		}
+
+		message = strings.ReplaceAll(message, ":attribute", attribute)
 		message = strings.ReplaceAll(message, ":code", result.Code)
 		message = strings.ReplaceAll(message, ":message", result.Message)
 

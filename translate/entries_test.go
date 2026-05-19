@@ -35,3 +35,21 @@ func TestSimpleReplacesOverlappingMetadata(t *testing.T) {
 
 	require.Equal(t, "between 2 and 10", translation.Message)
 }
+
+// TestSimpleUnnamedFieldUsesAttributeFallback verifies unnamed fields show "attribute".
+func TestSimpleUnnamedFieldUsesAttributeFallback(t *testing.T) {
+	result := golidate.Uncertain(10, "min").With("min", 5).Fail()
+
+	translation := translate.Simple("the :attribute field must be at least @min")(language.English, result)
+
+	require.Equal(t, "the attribute field must be at least 5", translation.Message)
+}
+
+// TestSimpleNamedFieldUsesName verifies named fields show their name.
+func TestSimpleNamedFieldUsesName(t *testing.T) {
+	result := golidate.Uncertain(10, "min").Name("age").With("min", 5).Fail()
+
+	translation := translate.Simple("the :attribute field must be at least @min")(language.English, result)
+
+	require.Equal(t, "the age field must be at least 5", translation.Message)
+}

@@ -328,16 +328,17 @@ func mergeDictionaries(dictionaries ...Dictionary) Dictionary {
 
 // Uncertain creates a result with an unset pass or fail state.
 //
-// The initial state is failing until Pass is called. Attribute defaults to
-// "attribute", Message defaults to code, and Metadata is initialized so rule
-// constructors can immediately attach placeholder data.
+// The initial state is failing until Pass is called. Attribute defaults to the
+// empty string so translation entries can substitute a generic "attribute" word
+// when no name is provided. Message defaults to code, and Metadata is
+// initialized so rule constructors can immediately attach placeholder data.
 func Uncertain(value any, code string) Result {
 	return Result{
 		ok:               false,
 		conditions:       make([]Condition, 0),
 		children:         make(Results, 0),
 		prefixedChildren: make(Results, 0),
-		Attribute:        "attribute",
+		Attribute:        "",
 		Value:            value,
 		Code:             code,
 		Message:          code,
