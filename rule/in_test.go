@@ -49,4 +49,25 @@ func TestIn(t *testing.T) {
 		require.Equal(t, "b", result.Value)
 		require.Equal(t, golidate.Metadata{"values": values}, result.Metadata)
 	})
+
+	t.Run("DifferentType", func(t *testing.T) {
+		values := []any{"1"}
+		result := rule.In(values...)(1)
+
+		require.False(t, result.Passes())
+		require.Equal(t, "in", result.Code)
+		require.Equal(t, 1, result.Value)
+		require.Equal(t, golidate.Metadata{"values": values}, result.Metadata)
+	})
+
+	t.Run("MapPass", func(t *testing.T) {
+		value := map[string]int{"foo": 1}
+		values := []any{map[string]int{"foo": 1}}
+		result := rule.In(values...)(value)
+
+		require.True(t, result.Passes())
+		require.Equal(t, "in", result.Code)
+		require.Equal(t, value, result.Value)
+		require.Equal(t, golidate.Metadata{"values": values}, result.Metadata)
+	})
 }

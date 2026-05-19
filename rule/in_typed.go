@@ -1,21 +1,22 @@
 package rule
 
 import (
-	"fmt"
-
 	"github.com/studiolambda/golidate"
 )
 
-func InTyped[T any](values ...T) golidate.Rule {
+func InTyped[T comparable](values ...T) golidate.Rule {
 	return func(value any) golidate.Result {
 		result := golidate.
 			Uncertain(value, "in_typed").
 			With("values", values)
 
-		val := fmt.Sprintf("%+v", value)
+		val, ok := value.(T)
+		if !ok {
+			return result.Fail()
+		}
 
 		for _, v := range values {
-			if val == fmt.Sprintf("%+v", v) {
+			if val == v {
 				return result.Pass()
 			}
 		}

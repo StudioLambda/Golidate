@@ -49,4 +49,14 @@ func TestInTyped(t *testing.T) {
 		require.Equal(t, "d", result.Value)
 		require.Equal(t, golidate.Metadata{"values": values}, result.Metadata)
 	})
+
+	t.Run("DifferentType", func(t *testing.T) {
+		values := []int{1}
+		result := rule.InTyped(values...)(int64(1))
+
+		require.False(t, result.Passes())
+		require.Equal(t, "in_typed", result.Code)
+		require.Equal(t, int64(1), result.Value)
+		require.Equal(t, golidate.Metadata{"values": values}, result.Metadata)
+	})
 }
