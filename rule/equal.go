@@ -1,6 +1,10 @@
 package rule
 
-import "github.com/studiolambda/golidate"
+import (
+	"reflect"
+
+	"github.com/studiolambda/golidate"
+)
 
 func Equal(other any) golidate.Rule {
 	return func(value any) golidate.Result {
@@ -8,7 +12,7 @@ func Equal(other any) golidate.Rule {
 			Uncertain(value, "equal").
 			With("other", other)
 
-		if value != other {
+		if !reflect.DeepEqual(value, other) {
 			return result.Fail()
 		}
 
