@@ -1,10 +1,16 @@
 package language
 
 import (
+	"regexp"
 	"strings"
 
 	"github.com/studiolambda/golidate"
 	"github.com/studiolambda/golidate/translate"
+)
+
+var (
+	mustPattern        = regexp.MustCompile(`\bmust\b`)
+	negatedMustPattern = regexp.MustCompile(`^\s+not\b`)
 )
 
 // The English language for golidate. Please
@@ -66,8 +72,36 @@ func Invert(dictionary golidate.Dictionary, result golidate.Result) golidate.Res
 		result.Metadata["operation"] = golidate.Result(translated)
 	}
 
-	result.Message = strings.ReplaceAll(message, "must", "must not")
-	result.Message = strings.ReplaceAll(result.Message, "not not", "")
+	result.Message = invertMust(message)
 
 	return result
+}
+
+func invertMust(message string) string {
+	matches := mustPattern.FindAllStringIndex(message, -1)
+
+	if len(matches) == 0 {
+		return message
+	}
+
+	builder := strings.Builder{}
+	last := 0
+
+	for _, match := range matches {
+		builder.WriteString(message[last:match[0]])
+
+		if negated := negatedMustPattern.FindStringIndex(message[match[1]:]); negated != nil {
+			builder.WriteString("must")
+			last = match[1] + negated[1]
+
+			continue
+		}
+
+		builder.WriteString("must not")
+		last = match[1]
+	}
+
+	builder.WriteString(message[last:])
+
+	return builder.String()
 }
