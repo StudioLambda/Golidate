@@ -41,26 +41,31 @@ func pending(value any, self bool) Pending {
 	}
 }
 
+// Value starts validation for a value and recursively validates children.
 func Value(value any) Pending {
 	return pending(value, false)
 }
 
+// Self starts validation for a value without treating it as a Validator.
 func Self(value any) Pending {
 	return pending(value, true)
 }
 
+// Rules replaces the rules that will be applied to the pending value.
 func (pending Pending) Rules(rules ...Rule) Pending {
 	pending.rules = rules
 
 	return pending
 }
 
+// AppendRules appends rules that will be applied to the pending value.
 func (pending Pending) AppendRules(rules ...Rule) Pending {
 	pending.rules = append(pending.rules, rules...)
 
 	return pending
 }
 
+// Name assigns the attribute name used by generated results.
 func (pending Pending) Name(attribute string) Pending {
 	pending.attribute = attribute
 
@@ -111,6 +116,7 @@ func (pending Pending) recursiveValidate(ctx context.Context) Results {
 	return results
 }
 
+// Validate applies the pending rules and recursive child validation.
 func (pending Pending) Validate(ctx context.Context) Results {
 	results := make(Results, 0, len(pending.rules))
 

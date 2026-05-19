@@ -1,7 +1,9 @@
 package golidate
 
+// Results is a list of validation results.
 type Results []Result
 
+// PassesAll reports whether all results pass, including child results.
 func (results Results) PassesAll() bool {
 	for _, result := range results {
 		if !result.PassesAll() {
@@ -12,6 +14,7 @@ func (results Results) PassesAll() bool {
 	return true
 }
 
+// PassesAny reports whether any result passes, including child results.
 func (results Results) PassesAny() bool {
 	for _, result := range results {
 		if result.PassesAll() {
@@ -22,6 +25,7 @@ func (results Results) PassesAny() bool {
 	return false
 }
 
+// Failed returns results that failed, including child result state.
 func (results Results) Failed() Results {
 	failed := make(Results, 0, len(results))
 
@@ -34,6 +38,7 @@ func (results Results) Failed() Results {
 	return failed
 }
 
+// Passed returns results that passed, including child result state.
 func (results Results) Passed() Results {
 	passed := make(Results, 0, len(results))
 
@@ -46,6 +51,7 @@ func (results Results) Passed() Results {
 	return passed
 }
 
+// Prefixed returns results with attribute names prefixed.
 func (results Results) Prefixed(prefix string) Results {
 	if prefix == "" {
 		return results
@@ -60,6 +66,7 @@ func (results Results) Prefixed(prefix string) Results {
 	return prefixed
 }
 
+// Messages returns result messages after applying optional formatters.
 func (results Results) Messages(formatters ...Formatter) []string {
 	messages := make([]string, len(results))
 
@@ -74,6 +81,7 @@ func (results Results) Messages(formatters ...Formatter) []string {
 	return messages
 }
 
+// Translate returns results translated by the provided dictionaries.
 func (results Results) Translate(dictionaries ...Dictionary) Results {
 	res := make(Results, len(results))
 
@@ -84,6 +92,7 @@ func (results Results) Translate(dictionaries ...Dictionary) Results {
 	return res
 }
 
+// Group groups results by attribute name.
 func (results Results) Group() Grouped {
 	group := make(Grouped)
 
@@ -94,6 +103,7 @@ func (results Results) Group() Grouped {
 	return group
 }
 
+// Has reports whether any result has the given attribute name.
 func (results Results) Has(attribute string) bool {
 	for _, result := range results {
 		if result.Attribute == attribute {

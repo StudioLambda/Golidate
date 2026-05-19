@@ -1,9 +1,12 @@
 package golidate
 
+// Metadata stores additional information about a validation result.
 type Metadata map[string]any
 
+// OnRename updates dependent result state after a result is renamed.
 type OnRename func(result Result)
 
+// Result describes the outcome of one validation rule.
 type Result struct {
 	ok               bool        `json:"-"`
 	conditions       []Condition `json:"-"`
@@ -17,6 +20,7 @@ type Result struct {
 	Metadata         Metadata    `json:"metadata"`
 }
 
+// Results expands a result and its children into a flat result list.
 func (result Result) Results(name string) Results {
 	results := make(Results, 1)
 
@@ -37,18 +41,21 @@ func (result Result) Results(name string) Results {
 	return results
 }
 
+// WithChild appends a child result that shares the parent attribute name.
 func (result Result) WithChild(child Result) Result {
 	result.children = append(result.children, child)
 
 	return result
 }
 
+// WithPrefixedChild appends a child result prefixed by the parent attribute.
 func (result Result) WithPrefixedChild(child Result) Result {
 	result.prefixedChildren = append(result.prefixedChildren, child)
 
 	return result
 }
 
+// Name sets the result attribute name.
 func (result Result) Name(attribute string) Result {
 	result.Attribute = attribute
 
@@ -59,6 +66,7 @@ func (result Result) Name(attribute string) Result {
 	return result
 }
 
+// OnRenameMany returns a callback that renames result metadata lists.
 func OnRenameMany(key string) OnRename {
 	return func(result Result) {
 		if operations, ok := result.Metadata[key].(Results); ok {
@@ -69,6 +77,7 @@ func OnRenameMany(key string) OnRename {
 	}
 }
 
+// OnRenameSingle returns a callback that renames result metadata values.
 func OnRenameSingle(key string) OnRename {
 	return func(result Result) {
 		if operation, ok := result.Metadata[key].(Result); ok {
@@ -77,12 +86,14 @@ func OnRenameSingle(key string) OnRename {
 	}
 }
 
+// OnRename sets a callback invoked when the result is renamed.
 func (result Result) OnRename(callback OnRename) Result {
 	result.onRename = callback
 
 	return result
 }
 
+// With adds metadata to the result.
 func (result Result) With(key string, value any) Result {
 	return result.WithMetadataMerged(
 		Metadata{
@@ -91,12 +102,14 @@ func (result Result) With(key string, value any) Result {
 	)
 }
 
+// WithMetadata replaces result metadata.
 func (result Result) WithMetadata(metadata Metadata) Result {
 	result.Metadata = metadata
 
 	return result
 }
 
+// WithMetadataMerged merges metadata into the result.
 func (result Result) WithMetadataMerged(metadata Metadata) Result {
 	if result.Metadata == nil {
 		result.Metadata = make(Metadata)
@@ -109,18 +122,21 @@ func (result Result) WithMetadataMerged(metadata Metadata) Result {
 	return result
 }
 
+// Pass marks the result as passing.
 func (result Result) Pass() Result {
 	result.ok = true
 
 	return result
 }
 
+// Fail marks the result as failing.
 func (result Result) Fail() Result {
 	result.ok = false
 
 	return result
 }
 
+// Passes reports whether the direct result state passes.
 func (result Result) Passes() bool {
 	for _, condition := range result.conditions {
 		if !condition(result.Value) {
@@ -131,6 +147,7 @@ func (result Result) Passes() bool {
 	return result.ok
 }
 
+// PassesChilds reports whether all child results pass.
 func (result Result) PassesChilds() bool {
 	for _, child := range result.children {
 		if !child.Passes() {
@@ -147,16 +164,19 @@ func (result Result) PassesChilds() bool {
 	return true
 }
 
+// PassesAll reports whether the result and all child results pass.
 func (result Result) PassesAll() bool {
 	return result.Passes() && result.PassesChilds()
 }
 
+// Conditions sets applicability conditions on the result.
 func (result Result) Conditions(conditions ...Condition) Result {
 	result.conditions = conditions
 
 	return result
 }
 
+// When sets a boolean applicability condition on the result.
 func (result Result) When(condition bool) Result {
 	result.conditions = []Condition{
 		func(any) bool {
@@ -167,6 +187,7 @@ func (result Result) When(condition bool) Result {
 	return result
 }
 
+// Translate returns the result translated by the provided dictionaries.
 func (result Result) Translate(dictionaries ...Dictionary) Result {
 	dictionary := make(Dictionary)
 
@@ -183,6 +204,7 @@ func (result Result) Translate(dictionaries ...Dictionary) Result {
 	return result
 }
 
+// Uncertain creates a result with an unset pass or fail state.
 func Uncertain(value any, code string) Result {
 	return Result{
 		ok:               false,
@@ -197,10 +219,12 @@ func Uncertain(value any, code string) Result {
 	}
 }
 
+// Fail creates a failing result.
 func Fail(value any, code string) Result {
 	return Uncertain(value, code).Fail()
 }
 
+// Pass creates a passing result.
 func Pass(value any, code string) Result {
 	return Uncertain(value, code).Pass()
 }
