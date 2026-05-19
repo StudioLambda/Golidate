@@ -21,6 +21,9 @@ var (
 // The not entry inverts standalone "must" and "must not" phrases without
 // changing words that merely contain those letters.
 //
+// When Not wraps a compound rule (And or Or), De Morgan's law is applied: And
+// becomes "or else" and Or becomes "and also" so negation distributes correctly.
+//
 // These keywords are: `and also`, `or else`, `must`, `must not`
 //
 // Try alternate wording if a custom message needs those exact phrases without
@@ -71,18 +74,46 @@ var English = golidate.Dictionary{
 // The nested operation is expected in result metadata under "operation". If it
 // is present, the translated operation is written back into metadata so callers
 // can inspect the same message that was used for inversion.
+//
+// Compound operations (And, Or) are handled with De Morgan's law: an And
+// operation under Not becomes "or else" joined, and an Or operation becomes
+// "and also" joined. This produces logically correct negated conjunctions.
+//
+// When the resulting message does not contain a standalone "must" token, Invert
+// prefixes the message with "must not" so the negation is always visible.
 func Invert(dictionary golidate.Dictionary, result golidate.Result) golidate.Result {
 	message := result.Message
 
 	if operation, ok := result.Metadata["operation"].(golidate.Result); ok {
-		translated := operation.Translate(dictionary)
+		translated := invertCompound(dictionary, operation)
 		message = translated.Message
 		result.Metadata["operation"] = golidate.Result(translated)
 	}
 
-	result.Message = invertMust(message)
+	inverted := invertMust(message)
+
+	if inverted == message && message != "" {
+		inverted = "must not " + message
+	}
+
+	result.Message = inverted
 
 	return result
+}
+
+// invertCompound applies De Morgan's law when negating compound rules.
+//
+// And operations are re-joined with " or else " and Or operations with
+// " and also ". Non-compound operations are translated normally.
+func invertCompound(dictionary golidate.Dictionary, operation golidate.Result) golidate.Result {
+	switch operation.Code {
+	case "and":
+		return translate.SplitFromMetadata("operations", " or else ")(dictionary, operation)
+	case "or":
+		return translate.SplitFromMetadata("operations", " and also ")(dictionary, operation)
+	default:
+		return operation.Translate(dictionary)
+	}
 }
 
 // invertMust toggles standalone English "must" and "must not" phrases.
