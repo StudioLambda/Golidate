@@ -22,7 +22,7 @@ type Result struct {
 
 // Results expands a result and its children into a flat result list.
 func (result Result) Results(name string) Results {
-	results := make(Results, 1)
+	results := make(Results, 1, result.resultCount())
 
 	results[0] = result
 
@@ -39,6 +39,20 @@ func (result Result) Results(name string) Results {
 	}
 
 	return results
+}
+
+func (result Result) resultCount() int {
+	count := 1
+
+	for _, child := range result.children {
+		count += child.resultCount()
+	}
+
+	for _, child := range result.prefixedChildren {
+		count += child.resultCount()
+	}
+
+	return count
 }
 
 // WithChild appends a child result that shares the parent attribute name.
