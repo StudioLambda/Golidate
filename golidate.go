@@ -16,16 +16,31 @@ type Validator interface {
 	Validate(ctx context.Context) Results
 }
 
-// Validate runs all pending validations and returns their results.
+// Validation holds the context for a builder-style validation invocation.
+//
+// Create one via Validate and then call Values to run pending validations.
+type Validation struct {
+	// ctx stores the context propagated to all pending validations.
+	ctx context.Context
+}
+
+// Validate begins a new validation with the given context and returns a
+// Validation builder. Call Values on the returned builder to supply pending
+// validations and obtain results.
+func Validate(ctx context.Context) Validation {
+	return Validation{ctx: ctx}
+}
+
+// Values runs all pending validations and returns their results.
 //
 // Pendings are evaluated in the order provided. The returned slice preserves
 // that order, except for nested map validation where map keys are sorted by
 // their formatted names to avoid Go's randomized map iteration order.
-func Validate(ctx context.Context, pendings ...Pending) Results {
+func (validation Validation) Values(pendings ...Pending) Results {
 	results := Results{}
 
 	for _, pending := range pendings {
-		results = append(results, pending.Validate(ctx)...)
+		results = append(results, pending.Validate(validation.ctx)...)
 	}
 
 	return results

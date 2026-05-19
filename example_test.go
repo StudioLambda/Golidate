@@ -9,10 +9,9 @@ import (
 	"github.com/studiolambda/golidate/translate/language"
 )
 
-// ExampleValidate demonstrates validating one value and translating failures.
-func ExampleValidate() {
-	results := golidate.Validate(
-		context.Background(),
+// ExampleValidate_values demonstrates validating one value and translating failures.
+func ExampleValidate_values() {
+	results := golidate.Validate(context.Background()).Values(
 		golidate.Value("erik42").Name("username").Rules(
 			rule.Alpha(),
 		),

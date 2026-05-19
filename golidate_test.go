@@ -25,8 +25,7 @@ type EitherAorB struct {
 
 // Validate applies the conditional type rule selected by kind.
 func (either EitherAorB) Validate(ctx context.Context) golidate.Results {
-	return golidate.Validate(
-		ctx,
+	return golidate.Validate(ctx).Values(
 		golidate.Value(either.value).Rules(
 			rule.Type[A]().When(either.kind == "a"),
 			rule.Type[B]().When(either.kind == "b"),
@@ -56,8 +55,7 @@ type User struct {
 
 // Validate validates direct user fields and delegates to Profile validation.
 func (user User) Validate(ctx context.Context) golidate.Results {
-	return golidate.Validate(
-		ctx,
+	return golidate.Validate(ctx).Values(
 		golidate.Value(user.Username).Rules(
 			rule.Not(rule.Nil()),
 		),
@@ -70,8 +68,7 @@ func (user User) Validate(ctx context.Context) golidate.Results {
 
 // Validate validates profile fields used by nested validation tests.
 func (user Profile) Validate(ctx context.Context) golidate.Results {
-	return golidate.Validate(
-		ctx,
+	return golidate.Validate(ctx).Values(
 		golidate.Value(user.Name),
 		golidate.Value(user.Email).Rules(
 			rule.Not(rule.Nil()),
@@ -85,8 +82,7 @@ func (user Profile) Validate(ctx context.Context) golidate.Results {
 // TestValidate verifies top-level and nested validation pass/fail behavior.
 func TestValidate(t *testing.T) {
 	t.Run("SinglePass", func(t *testing.T) {
-		results := golidate.Validate(
-			context.Background(),
+		results := golidate.Validate(context.Background()).Values(
 			golidate.Value(3).Rules(
 				rule.Min(2),
 			),
@@ -96,8 +92,7 @@ func TestValidate(t *testing.T) {
 	})
 
 	t.Run("SingleFailure", func(t *testing.T) {
-		result := golidate.Validate(
-			context.Background(),
+		result := golidate.Validate(context.Background()).Values(
 			golidate.Value(1).Rules(
 				rule.Min(2),
 			),
@@ -107,8 +102,7 @@ func TestValidate(t *testing.T) {
 	})
 
 	t.Run("SingleMultipleFailures", func(t *testing.T) {
-		result := golidate.Validate(
-			context.Background(),
+		result := golidate.Validate(context.Background()).Values(
 			golidate.Value(1).Rules(rule.Min(2), rule.Max(0)),
 		)
 
@@ -116,8 +110,7 @@ func TestValidate(t *testing.T) {
 	})
 
 	t.Run("MultipleSuccess", func(t *testing.T) {
-		result := golidate.Validate(
-			context.Background(),
+		result := golidate.Validate(context.Background()).Values(
 			golidate.Value(3).Rules(rule.Min(2)),
 			golidate.Value(3).Rules(rule.Max(4)),
 		)
@@ -126,8 +119,7 @@ func TestValidate(t *testing.T) {
 	})
 
 	t.Run("MultipleSingleFailure", func(t *testing.T) {
-		result := golidate.Validate(
-			context.Background(),
+		result := golidate.Validate(context.Background()).Values(
 			golidate.Value(1).Rules(rule.Min(2)),
 			golidate.Value(3).Rules(rule.Max(4)),
 		)
@@ -136,8 +128,7 @@ func TestValidate(t *testing.T) {
 	})
 
 	t.Run("MultipleMultipleFailures", func(t *testing.T) {
-		result := golidate.Validate(
-			context.Background(),
+		result := golidate.Validate(context.Background()).Values(
 			golidate.Value(1).Rules(rule.Min(2)),
 			golidate.Value(5).Rules(rule.Max(4)),
 		)
@@ -156,8 +147,7 @@ func TestValidate(t *testing.T) {
 			},
 		}
 
-		result := golidate.Validate(
-			context.Background(),
+		result := golidate.Validate(context.Background()).Values(
 			golidate.Value(user),
 		)
 
@@ -175,8 +165,7 @@ func TestValidate(t *testing.T) {
 			},
 		}
 
-		result := golidate.Validate(
-			context.Background(),
+		result := golidate.Validate(context.Background()).Values(
 			golidate.Value(user),
 		)
 
@@ -220,8 +209,7 @@ var MaxKey = maxKeyStruct{}
 // Validate validates ContextValue using a context-provided maximum.
 func (c ContextValue) Validate(ctx context.Context) golidate.Results {
 	max := ctx.Value(MaxKey).(int64)
-	return golidate.Validate(
-		ctx,
+	return golidate.Validate(ctx).Values(
 		golidate.Value(c.Value).Rules(
 			rule.Min(0),
 			rule.Max(max),

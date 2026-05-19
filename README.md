@@ -36,8 +36,7 @@ import (
 )
 
 func main() {
-	results := golidate.Validate(
-		context.Background(),
+	results := golidate.Validate(context.Background()).Values(
 		golidate.Value("erik42").Name("username").Rules(
 			rule.Alpha(),
 		),
@@ -159,8 +158,7 @@ type User struct {
 }
 
 func (user User) Validate(ctx context.Context) golidate.Results {
-	return golidate.Validate(
-		ctx,
+	return golidate.Validate(ctx).Values(
 		golidate.Value(user.Email).Name("email").Rules(rule.Email()),
 		golidate.Value(user.Name).Name("name").Rules(rule.Required(rule.MinLen(2))),
 	)
@@ -448,8 +446,7 @@ type Profile struct {
 }
 
 func (profile Profile) Validate(ctx context.Context) golidate.Results {
-	return golidate.Validate(
-		ctx,
+	return golidate.Validate(ctx).Values(
 		golidate.Value(profile.DisplayName).Name("display_name").Rules(rule.MinLen(2)),
 	)
 }
@@ -459,8 +456,7 @@ type Account struct {
 }
 
 func (account Account) Validate(ctx context.Context) golidate.Results {
-	return golidate.Validate(
-		ctx,
+	return golidate.Validate(ctx).Values(
 		golidate.Value(account.Profile).Name("profile"),
 	)
 }
@@ -497,8 +493,7 @@ type Token struct {
 }
 
 func (token *Token) Validate(ctx context.Context) golidate.Results {
-	return golidate.Validate(
-		ctx,
+	return golidate.Validate(ctx).Values(
 		golidate.Value(token.Value).Name("value").Rules(rule.MinLen(10)),
 	)
 }
@@ -544,8 +539,7 @@ when you want Go's `reflect.DeepEqual` behavior for complex values.
 ## Translation and Formatting Examples
 
 ```go
-results := golidate.Validate(
-	ctx,
+results := golidate.Validate(ctx).Values(
 	golidate.Value("bad-email").Name("email").Rules(rule.Email()),
 )
 
@@ -580,8 +574,7 @@ codes, attributes, and metadata directly.
 
 ```go
 func TestUsernameMessage(t *testing.T) {
-	results := golidate.Validate(
-		context.Background(),
+	results := golidate.Validate(context.Background()).Values(
 		golidate.Value("erik42").Name("username").Rules(rule.Alpha()),
 	)
 
@@ -641,8 +634,7 @@ clear.
 Use multiple pending validations when you want separate messages:
 
 ```go
-golidate.Validate(
-	ctx,
+golidate.Validate(ctx).Values(
 	golidate.Value(password).Name("password").Rules(rule.MinLen(8)),
 	golidate.Value(password).Name("password").Rules(rule.HasPrefix("app_")),
 )

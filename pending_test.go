@@ -15,7 +15,7 @@ type Self int
 
 // Validate applies numeric rules to the underlying Self integer.
 func (s Self) Validate(ctx context.Context) golidate.Results {
-	return golidate.Validate(ctx, golidate.Self(int(s)).Name("self").Rules(
+	return golidate.Validate(ctx).Values(golidate.Self(int(s)).Name("self").Rules(
 		rule.Min(0), rule.Max(10),
 	))
 }
@@ -28,8 +28,7 @@ type PointerOnly struct {
 
 // Validate applies numeric rules through a pointer receiver.
 func (p *PointerOnly) Validate(ctx context.Context) golidate.Results {
-	return golidate.Validate(
-		ctx,
+	return golidate.Validate(ctx).Values(
 		golidate.Value(p.Cp).Name("cp").Rules(
 			rule.Min(0),
 			rule.Max(10),
@@ -79,8 +78,7 @@ type Bs struct {
 
 // Validate applies numeric rules to Bs.Cp.
 func (b Bs) Validate(ctx context.Context) golidate.Results {
-	return golidate.Validate(
-		ctx,
+	return golidate.Validate(ctx).Values(
 		golidate.Value(b.Cp).Name("cp").Rules(
 			rule.Min(0),
 			rule.Max(10),
@@ -100,8 +98,7 @@ type As struct {
 
 // Validate delegates to the nested validators stored in As.
 func (a As) Validate(ctx context.Context) golidate.Results {
-	return golidate.Validate(
-		ctx,
+	return golidate.Validate(ctx).Values(
 		golidate.Value(a.Bp).Name("bp"),
 		golidate.Value(a.Dp).Name("dp"),
 		golidate.Value(a.Ep).Name("ep"),

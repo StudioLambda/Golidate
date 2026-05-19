@@ -14,8 +14,7 @@ import (
 // TestResultsTranslate verifies dictionary translation and override behavior.
 func TestResultsTranslate(t *testing.T) {
 	t.Run("Simple", func(t *testing.T) {
-		results := golidate.Validate(
-			context.Background(),
+		results := golidate.Validate(context.Background()).Values(
 			golidate.Value("something invalid").Name("username").Rules(
 				rule.Alpha(),
 			),
@@ -28,8 +27,7 @@ func TestResultsTranslate(t *testing.T) {
 	})
 
 	t.Run("Complex", func(t *testing.T) {
-		results := golidate.Validate(
-			context.Background(),
+		results := golidate.Validate(context.Background()).Values(
 			golidate.Value("something invalid").Name("username").Rules(
 				rule.And(rule.MinLen(5), rule.MaxLen(10)),
 				rule.Not(rule.Nil()),
@@ -91,8 +89,7 @@ type NestedResults struct {
 
 // Validate validates NestedResults fields for grouping tests.
 func (n NestedResults) Validate(ctx context.Context) golidate.Results {
-	return golidate.Validate(
-		ctx,
+	return golidate.Validate(ctx).Values(
 		golidate.Value(n.Name).Name("name").Rules(
 			rule.MinLen(4),
 		),
@@ -109,8 +106,7 @@ func (n NestedResults) Validate(ctx context.Context) golidate.Results {
 func TestResultsGroup(t *testing.T) {
 	nested := NestedResults{Numbers: []int{1, 2, 30}}
 
-	results := golidate.Validate(
-		context.Background(),
+	results := golidate.Validate(context.Background()).Values(
 		golidate.Value("something.valid").Name("username").Rules(
 			rule.Not(rule.Nil()),
 			rule.Type[string](),
