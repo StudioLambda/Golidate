@@ -28,3 +28,15 @@ func TestAccepted(t *testing.T) {
 		require.Equal(t, golidate.Metadata{"values": rule.AcceptedValues}, result.Metadata)
 	})
 }
+
+func TestAcceptedUsesCopiedValues(t *testing.T) {
+	accepted := rule.Accepted()
+	rule.AcceptedValues[0] = "changed"
+	t.Cleanup(func() {
+		rule.AcceptedValues[0] = "true"
+	})
+
+	result := accepted("true")
+
+	require.True(t, result.Passes())
+}

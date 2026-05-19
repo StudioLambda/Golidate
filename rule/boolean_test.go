@@ -29,3 +29,15 @@ func TestBoolean(t *testing.T) {
 		require.Equal(t, golidate.Metadata{"values": rule.BooleanValues}, result.Metadata)
 	})
 }
+
+func TestBooleanUsesCopiedValues(t *testing.T) {
+	boolean := rule.Boolean()
+	rule.BooleanValues[0] = "changed"
+	t.Cleanup(func() {
+		rule.BooleanValues[0] = "true"
+	})
+
+	result := boolean("true")
+
+	require.True(t, result.Passes())
+}

@@ -29,3 +29,15 @@ func TestDeclined(t *testing.T) {
 		require.Equal(t, golidate.Metadata{"values": rule.DeclinedValues}, result.Metadata)
 	})
 }
+
+func TestDeclinedUsesCopiedValues(t *testing.T) {
+	declined := rule.Declined()
+	rule.DeclinedValues[0] = "changed"
+	t.Cleanup(func() {
+		rule.DeclinedValues[0] = "false"
+	})
+
+	result := declined("false")
+
+	require.True(t, result.Passes())
+}
