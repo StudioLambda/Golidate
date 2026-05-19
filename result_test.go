@@ -69,6 +69,22 @@ func TestResultWithMetadataMerged(t *testing.T) {
 	require.Equal(t, golidate.Metadata{"test": "foo", "test2": "foo"}, res.Metadata)
 }
 
+// TestOnRenameManyDoesNotMutateSharedSlice verifies rename copies the slice.
+func TestOnRenameManyDoesNotMutateSharedSlice(t *testing.T) {
+	original := golidate.Results{
+		golidate.Uncertain("v", "child").Name("original"),
+	}
+
+	result := golidate.
+		Uncertain("v", "parent").
+		With("operations", original).
+		OnRename(golidate.OnRenameMany("operations"))
+
+	_ = result.Name("renamed")
+
+	require.Equal(t, "original", original[0].Attribute)
+}
+
 // TestResultWithMetadataMergedInitializesNilMetadata verifies nil metadata merging.
 func TestResultWithMetadataMergedInitializesNilMetadata(t *testing.T) {
 	result := golidate.Result{}.WithMetadataMerged(golidate.Metadata{

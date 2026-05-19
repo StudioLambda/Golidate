@@ -126,9 +126,14 @@ func (result Result) Name(attribute string) Result {
 func OnRenameMany(key string) OnRename {
 	return func(result Result) {
 		if operations, ok := result.Metadata[key].(Results); ok {
-			for i := range operations {
-				operations[i] = operations[i].Name(result.Attribute)
+			copied := make(Results, len(operations))
+			copy(copied, operations)
+
+			for i := range copied {
+				copied[i] = copied[i].Name(result.Attribute)
 			}
+
+			result.Metadata[key] = copied
 		}
 	}
 }
