@@ -35,4 +35,31 @@ func TestMin(t *testing.T) {
 		require.Equal(t, 4, result.Value)
 		require.Equal(t, golidate.Metadata{"min": int64(4)}, result.Metadata)
 	})
+
+	t.Run("DecimalPass", func(t *testing.T) {
+		result := rule.Min(4)(4.1)
+
+		require.True(t, result.Passes())
+		require.Equal(t, "min", result.Code)
+		require.Equal(t, 4.1, result.Value)
+		require.Equal(t, golidate.Metadata{"min": int64(4)}, result.Metadata)
+	})
+
+	t.Run("DecimalFail", func(t *testing.T) {
+		result := rule.Min(4)(3.9)
+
+		require.False(t, result.Passes())
+		require.Equal(t, "min", result.Code)
+		require.Equal(t, 3.9, result.Value)
+		require.Equal(t, golidate.Metadata{"min": int64(4)}, result.Metadata)
+	})
+
+	t.Run("Unsupported", func(t *testing.T) {
+		result := rule.Min(4)("5")
+
+		require.False(t, result.Passes())
+		require.Equal(t, "min", result.Code)
+		require.Equal(t, "5", result.Value)
+		require.Equal(t, golidate.Metadata{"min": int64(4)}, result.Metadata)
+	})
 }

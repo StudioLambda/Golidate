@@ -35,4 +35,31 @@ func TestMax(t *testing.T) {
 		require.Equal(t, 4, result.Value)
 		require.Equal(t, golidate.Metadata{"max": int64(4)}, result.Metadata)
 	})
+
+	t.Run("DecimalPass", func(t *testing.T) {
+		result := rule.Max(4)(3.9)
+
+		require.True(t, result.Passes())
+		require.Equal(t, "max", result.Code)
+		require.Equal(t, 3.9, result.Value)
+		require.Equal(t, golidate.Metadata{"max": int64(4)}, result.Metadata)
+	})
+
+	t.Run("DecimalFail", func(t *testing.T) {
+		result := rule.Max(4)(4.1)
+
+		require.False(t, result.Passes())
+		require.Equal(t, "max", result.Code)
+		require.Equal(t, 4.1, result.Value)
+		require.Equal(t, golidate.Metadata{"max": int64(4)}, result.Metadata)
+	})
+
+	t.Run("Unsupported", func(t *testing.T) {
+		result := rule.Max(4)("3")
+
+		require.False(t, result.Passes())
+		require.Equal(t, "max", result.Code)
+		require.Equal(t, "3", result.Value)
+		require.Equal(t, golidate.Metadata{"max": int64(4)}, result.Metadata)
+	})
 }

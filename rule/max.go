@@ -1,9 +1,6 @@
 package rule
 
-import (
-	"github.com/spf13/cast"
-	"github.com/studiolambda/golidate"
-)
+import "github.com/studiolambda/golidate"
 
 func Max(max int64) golidate.Rule {
 	return func(value any) golidate.Result {
@@ -11,9 +8,9 @@ func Max(max int64) golidate.Rule {
 			Uncertain(value, "max").
 			With("max", max)
 
-		val, err := cast.ToInt64E(value)
+		val, ok := numberValue(value)
 
-		if err != nil || val > max {
+		if !ok || val > float64(max) {
 			return result.Fail()
 		}
 
