@@ -7,23 +7,30 @@ import (
 )
 
 func Len(exact int) golidate.Rule {
-	return func(value any) (result golidate.Result) {
-		result = golidate.
+	return func(value any) golidate.Result {
+		result := golidate.
 			Uncertain(value, "len").
 			With("len", exact)
 
-		ref := reflect.ValueOf(value)
-
-		defer func() {
-			if r := recover(); r != nil {
-				result.Fail()
-			}
-		}()
-
-		if ref.Len() != exact {
+		length, ok := lengthOf(value)
+		if !ok || length != exact {
 			return result.Fail()
 		}
 
 		return result.Pass()
+	}
+}
+
+func lengthOf(value any) (int, bool) {
+	if value == nil {
+		return 0, false
+	}
+
+	ref := reflect.ValueOf(value)
+	switch ref.Kind() {
+	case reflect.Array, reflect.Chan, reflect.Map, reflect.Slice, reflect.String:
+		return ref.Len(), true
+	default:
+		return 0, false
 	}
 }
