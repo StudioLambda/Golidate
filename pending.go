@@ -14,6 +14,15 @@ type Pending struct {
 }
 
 func pending(value any, self bool) Pending {
+	if _, ok := value.(Validator); ok {
+		return Pending{
+			value:     value,
+			attribute: "",
+			rules:     make([]Rule, 0),
+			self:      self,
+		}
+	}
+
 	reflected := reflect.ValueOf(value)
 	if reflected.Kind() == reflect.Ptr && !reflected.IsNil() {
 		return Pending{

@@ -18,6 +18,20 @@ func (s Self) Validate(ctx context.Context) golidate.Results {
 	))
 }
 
+type PointerOnly struct {
+	Cp int
+}
+
+func (p *PointerOnly) Validate(ctx context.Context) golidate.Results {
+	return golidate.Validate(
+		ctx,
+		golidate.Value(p.Cp).Name("cp").Rules(
+			rule.Min(0),
+			rule.Max(10),
+		),
+	)
+}
+
 func TestValue(t *testing.T) {
 	value := golidate.Value(42)
 
@@ -99,6 +113,18 @@ func TestRecursiveValidate(t *testing.T) {
 	require.True(t, failed.Has("bp.cp"))
 	require.True(t, failed.Has("dp.1.cp"))
 	require.True(t, failed.Has("ep.foo.cp"))
+}
+
+func TestRecursiveValidatePointerReceiver(t *testing.T) {
+	value := &PointerOnly{Cp: 40}
+
+	failed := golidate.
+		Value(value).
+		Validate(context.Background()).
+		Failed().
+		Translate(language.English)
+
+	require.True(t, failed.Has("cp"))
 }
 
 func TestPointerValue(t *testing.T) {
