@@ -682,6 +682,37 @@ func ReservedName(reserved map[string]struct{}) golidate.Rule {
 }
 ```
 
+## Message Generation Notes
+
+A few behaviors are worth knowing when working with translated messages:
+
+- **Custom rules need dictionary entries.** If a rule's code has no matching
+  entry in the translation dictionary, `Translate` returns the result unchanged
+  and `Messages()` surfaces the raw code string. Always provide a dictionary
+  entry for custom rule codes.
+
+- **Always translate before calling `Messages()`.** Compound rules like `And`,
+  `Or`, and `Required` produce results whose message is just the code (e.g.
+  `"and"`). Translation expands these into human-readable joined text via
+  `SplitFromMetadata`. Without translation the output is meaningless.
+
+- **Unnamed fields fall back to "attribute".** If you call `golidate.Value(x)`
+  without `.Name(...)`, the `:attribute` placeholder resolves to `"attribute"`.
+  Always name your pending values for clear messages.
+
+- **Negation uses De Morgan's law.** `Not(And(A, B))` translates with "or"
+  conjunction, and `Not(Or(A, B))` translates with "and" conjunction, matching
+  logical negation semantics. Messages without "must" receive a generic
+  "must not" prefix as fallback.
+
+- **`:value` is debug-oriented.** The `:value` placeholder in `translate.Simple`
+  formats values with `%+v`. For structs, maps, and slices this produces Go
+  debug output. Prefer metadata keys (e.g. `@min`, `@max`) for user-facing
+  values in your translation templates.
+
+- **`Punctuate` respects existing punctuation.** `format.Punctuate()` appends a
+  period only when the message does not already end with `.`, `!`, or `?`.
+
 ## Development
 
 Run the standard Go checks before committing changes:
