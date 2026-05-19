@@ -31,11 +31,11 @@ func TestDeclined(t *testing.T) {
 }
 
 func TestDeclinedUsesCopiedValues(t *testing.T) {
-	declined := rule.Declined()
 	rule.DeclinedValues[0] = "changed"
 	t.Cleanup(func() {
 		rule.DeclinedValues[0] = "false"
 	})
+	declined := rule.Declined()
 
 	result := declined("false")
 

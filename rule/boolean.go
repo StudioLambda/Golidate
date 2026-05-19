@@ -2,8 +2,10 @@ package rule
 
 import "github.com/studiolambda/golidate"
 
-var BooleanValues = []any{"true", "false", "1", "0", "on", "off", "yes", "no"}
+var booleanValues = []any{"true", "false", "1", "0", "on", "off", "yes", "no"}
+
+var BooleanValues = values(booleanValues)
 
 func Boolean() golidate.Rule {
-	return In(values(BooleanValues)...).Rename("boolean")
+	return In(values(booleanValues)...).Rename("boolean")
 }

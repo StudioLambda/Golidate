@@ -31,11 +31,11 @@ func TestBoolean(t *testing.T) {
 }
 
 func TestBooleanUsesCopiedValues(t *testing.T) {
-	boolean := rule.Boolean()
 	rule.BooleanValues[0] = "changed"
 	t.Cleanup(func() {
 		rule.BooleanValues[0] = "true"
 	})
+	boolean := rule.Boolean()
 
 	result := boolean("true")
 

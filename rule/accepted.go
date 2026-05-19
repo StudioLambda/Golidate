@@ -2,8 +2,10 @@ package rule
 
 import "github.com/studiolambda/golidate"
 
-var AcceptedValues = []any{"true", "1", "on", "yes"}
+var acceptedValues = []any{"true", "1", "on", "yes"}
+
+var AcceptedValues = values(acceptedValues)
 
 func Accepted() golidate.Rule {
-	return In(values(AcceptedValues)...).Rename("accepted")
+	return In(values(acceptedValues)...).Rename("accepted")
 }

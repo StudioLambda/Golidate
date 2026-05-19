@@ -30,11 +30,11 @@ func TestAccepted(t *testing.T) {
 }
 
 func TestAcceptedUsesCopiedValues(t *testing.T) {
-	accepted := rule.Accepted()
 	rule.AcceptedValues[0] = "changed"
 	t.Cleanup(func() {
 		rule.AcceptedValues[0] = "true"
 	})
+	accepted := rule.Accepted()
 
 	result := accepted("true")
 
