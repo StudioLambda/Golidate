@@ -102,7 +102,7 @@ func (pending Pending) recursiveValidate(ctx context.Context) Results {
 	case reflect.Map:
 		for _, key := range reflected.MapKeys() {
 			if validatable, ok := reflected.MapIndex(key).Interface().(Validator); ok {
-				name := pending.attributeOfKey(key.String())
+				name := pending.attributeOfKey(fmt.Sprintf("%v", key.Interface()))
 				results = append(results, validatable.Validate(ctx).Prefixed(name)...)
 			}
 		}

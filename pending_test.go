@@ -115,6 +115,20 @@ func TestRecursiveValidate(t *testing.T) {
 	require.True(t, failed.Has("ep.foo.cp"))
 }
 
+func TestRecursiveValidateFormatsNonStringMapKeys(t *testing.T) {
+	values := map[int]Bs{
+		42: {Cp: 30},
+	}
+
+	failed := golidate.
+		Value(values).
+		Name("items").
+		Validate(context.Background()).
+		Failed()
+
+	require.True(t, failed.Has("items.42.cp"))
+}
+
 func TestRecursiveValidatePointerReceiver(t *testing.T) {
 	value := &PointerOnly{Cp: 40}
 
