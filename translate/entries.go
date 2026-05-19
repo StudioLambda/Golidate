@@ -2,6 +2,7 @@ package translate
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/spf13/cast"
@@ -45,7 +46,9 @@ func Simple(message string) golidate.Entry {
 		value := fmt.Sprintf("%+v", result.Value)
 		message = strings.ReplaceAll(message, ":value", value)
 
-		for key, val := range result.Metadata {
+		for _, key := range metadataKeys(result.Metadata) {
+			val := result.Metadata[key]
+
 			if value, err := cast.ToStringSliceE(val); err == nil {
 				message = strings.ReplaceAll(message, "@"+key, strings.Join(value, ", "))
 				continue
@@ -59,4 +62,22 @@ func Simple(message string) golidate.Entry {
 
 		return result
 	}
+}
+
+func metadataKeys(metadata golidate.Metadata) []string {
+	keys := make([]string, 0, len(metadata))
+
+	for key := range metadata {
+		keys = append(keys, key)
+	}
+
+	sort.Slice(keys, func(i int, j int) bool {
+		if len(keys[i]) == len(keys[j]) {
+			return keys[i] < keys[j]
+		}
+
+		return len(keys[i]) > len(keys[j])
+	})
+
+	return keys
 }
