@@ -12,7 +12,9 @@ func Punctuate() golidate.Formatter {
 			return message
 		}
 
-		if message[len(message)-1] != '.' {
+		last := rune(message[len(message)-1])
+
+		if last != '.' && last != '!' && last != '?' {
 			return message + "."
 		}
 
