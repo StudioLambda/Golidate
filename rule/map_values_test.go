@@ -79,4 +79,23 @@ func TestMapValues(t *testing.T) {
 		require.Equal(t, value, result.Value)
 		require.Equal(t, golidate.Metadata{}, result.Metadata)
 	})
+
+	t.Run("DeterministicOrder", func(t *testing.T) {
+		value := map[string]int{
+			"c": 30,
+			"a": 30,
+			"b": 30,
+		}
+
+		result := rule.MapValues[map[string]int](
+			rule.Max(20),
+		)(value)
+		results := result.Name("values").Results("values").Failed()
+
+		require.Len(t, results, 4)
+		require.Equal(t, "values", results[0].Attribute)
+		require.Equal(t, "values.a", results[1].Attribute)
+		require.Equal(t, "values.b", results[2].Attribute)
+		require.Equal(t, "values.c", results[3].Attribute)
+	})
 }

@@ -129,6 +129,25 @@ func TestRecursiveValidateFormatsNonStringMapKeys(t *testing.T) {
 	require.True(t, failed.Has("items.42.cp"))
 }
 
+func TestRecursiveValidateMapOrder(t *testing.T) {
+	values := map[string]Bs{
+		"c": {Cp: 30},
+		"a": {Cp: 30},
+		"b": {Cp: 30},
+	}
+
+	failed := golidate.
+		Value(values).
+		Name("items").
+		Validate(context.Background()).
+		Failed()
+
+	require.Len(t, failed, 3)
+	require.Equal(t, "items.a.cp", failed[0].Attribute)
+	require.Equal(t, "items.b.cp", failed[1].Attribute)
+	require.Equal(t, "items.c.cp", failed[2].Attribute)
+}
+
 func TestRecursiveValidatePointerReceiver(t *testing.T) {
 	value := &PointerOnly{Cp: 40}
 

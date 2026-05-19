@@ -1,10 +1,6 @@
 package rule
 
-import (
-	"fmt"
-
-	"github.com/studiolambda/golidate"
-)
+import "github.com/studiolambda/golidate"
 
 func MapValues[M ~map[K]V, K comparable, V any](rules ...golidate.Rule) golidate.Rule {
 	return func(value any) golidate.Result {
@@ -13,8 +9,8 @@ func MapValues[M ~map[K]V, K comparable, V any](rules ...golidate.Rule) golidate
 
 		if iterable, ok := value.(M); ok {
 			for _, rule := range rules {
-				for key, current := range iterable {
-					res := rule(current).Name(fmt.Sprintf("%+v", key))
+				for _, key := range sortedFormattedMapKeys(iterable) {
+					res := rule(iterable[key.key]).Name(key.name)
 					result = result.WithPrefixedChild(res)
 				}
 			}

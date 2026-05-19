@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+	"sort"
 )
 
 type Pending struct {
@@ -105,15 +106,39 @@ func (pending Pending) recursiveValidate(ctx context.Context) Results {
 			}
 		}
 	case reflect.Map:
-		for _, key := range reflected.MapKeys() {
-			if validatable, ok := reflected.MapIndex(key).Interface().(Validator); ok {
-				name := pending.attributeOfKey(fmt.Sprintf("%v", key.Interface()))
+		keys := sortedMapKeys(reflected)
+		for _, key := range keys {
+			if validatable, ok := reflected.MapIndex(key.value).Interface().(Validator); ok {
+				name := pending.attributeOfKey(key.name)
 				results = append(results, validatable.Validate(ctx).Prefixed(name)...)
 			}
 		}
 	}
 
 	return results
+}
+
+type mapKey struct {
+	name  string
+	value reflect.Value
+}
+
+func sortedMapKeys(reflected reflect.Value) []mapKey {
+	keys := reflected.MapKeys()
+	sorted := make([]mapKey, len(keys))
+
+	for i, key := range keys {
+		sorted[i] = mapKey{
+			name:  fmt.Sprintf("%v", key.Interface()),
+			value: key,
+		}
+	}
+
+	sort.Slice(sorted, func(i int, j int) bool {
+		return sorted[i].name < sorted[j].name
+	})
+
+	return sorted
 }
 
 // Validate applies the pending rules and recursive child validation.

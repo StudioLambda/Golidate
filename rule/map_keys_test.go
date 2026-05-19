@@ -57,4 +57,23 @@ func TestMapKeys(t *testing.T) {
 		require.Equal(t, value, result.Value)
 		require.Equal(t, golidate.Metadata{}, result.Metadata)
 	})
+
+	t.Run("DeterministicOrder", func(t *testing.T) {
+		value := map[string]int{
+			"c3": 3,
+			"a1": 1,
+			"b2": 2,
+		}
+
+		result := rule.MapKeys[map[string]int](
+			rule.Alpha(),
+		)(value)
+		results := result.Name("keys").Results("keys").Failed()
+
+		require.Len(t, results, 4)
+		require.Equal(t, "keys", results[0].Attribute)
+		require.Equal(t, "keys.[a1]", results[1].Attribute)
+		require.Equal(t, "keys.[b2]", results[2].Attribute)
+		require.Equal(t, "keys.[c3]", results[3].Attribute)
+	})
 }
